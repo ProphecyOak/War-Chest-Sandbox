@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://cdo0v1uds5mne"]
+
+[ext_resource type="PackedScene" uid="uid://73gwp1ovv7rj" path="res://Modular-Board/modular_board.tscn" id="1_80nbo"]
+[ext_resource type="Script" uid="uid://dyw4kwttrt7gv" path="res://game.gd" id="1_e2o6t"]
+[ext_resource type="PackedScene" uid="uid://p7yf72lugqeo" path="res://UI/mode_selector.tscn" id="3_feb5d"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_e2o6t")
+
+[node name="View" type="Camera2D" parent="."]
+offset = Vector2(575, 325)
+
+[node name="ModularBoard" parent="." groups=["Persist"] instance=ExtResource("1_80nbo")]
+position = Vector2(550, 325)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Mode Selector" parent="UI" node_paths=PackedStringArray("board") instance=ExtResource("3_feb5d")]
+offset_left = 19.0
+offset_top = 17.0
+offset_right = 119.0
+offset_bottom = 93.0
+board = NodePath("../../ModularBoard")

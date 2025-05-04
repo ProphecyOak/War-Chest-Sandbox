@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://byvvqrd5holdt"]
+
+[ext_resource type="Script" uid="uid://d123m8mmh0ri5" path="res://Auto-Board/hex.gd" id="1_djunl"]
+
+[node name="Hex" type="Polygon2D"]
+scale = Vector2(0.95, 0.95)
+polygon = PackedVector2Array(28.8675, 0, 86.6025, 0, 115.47, 50, 86.6025, 100, 28.8675, 100, 0, 50)
+script = ExtResource("1_djunl")
