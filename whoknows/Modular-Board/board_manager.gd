@@ -17,6 +17,8 @@ var boundaries:
 	get():
 		return [small_bounds, large_bounds]
 
+var control_spots = []
+
 func _ready():
 	hexes[0].append($CenterHex)
 

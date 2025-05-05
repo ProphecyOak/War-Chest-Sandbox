@@ -4,6 +4,13 @@ extends Node2D
 @onready var board = $ModularBoard
 const camSpeed = 450
 
+var current_player: Node
+var current_player_index = 0
+var next_player_index:
+	get:
+		return (current_player_index + 1) % len(players)
+var players = []
+
 func _input(event):
 	if event.is_action_pressed("Save"): save_game()
 	if event.is_action_pressed("Center"): cam.position = Vector2(0,0)
@@ -18,6 +25,18 @@ func _process(delta):
 		board.boundaries[0],
 		board.boundaries[1]
 	)
+
+func register_player(player):
+	players.append(player)
+
+func change_player(new_player_index = next_player_index):
+	current_player = players[new_player_index]
+	current_player_index = new_player_index
+	current_player.set_hand_lock(false)
+
+func end_turn(player):
+	player.set_hand_lock(true)
+	change_player()
 
 func save_game():
 	var save_file = FileAccess.open(Global.savegame_address, FileAccess.WRITE)
@@ -58,3 +77,6 @@ func load_game():
 
 func _ready():
 	load_game()
+	for player in players:
+		player.set_hand_lock(true)
+	change_player(0)

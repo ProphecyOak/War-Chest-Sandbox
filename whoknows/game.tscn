@@ -29,17 +29,24 @@ layout_mode = 2
 size_flags_vertical = 0
 board = NodePath("../../../ModularBoard")
 
-[node name="Coin Menu" parent="UI/Control" node_paths=PackedStringArray("player_handler") instance=ExtResource("4_fc0e3")]
+[node name="Coin Menu" parent="UI/Control" node_paths=PackedStringArray("default_player") instance=ExtResource("4_fc0e3")]
 visible = false
 layout_mode = 2
 size_flags_vertical = 1
 coin_size = Vector2(75, 75)
-player_handler = NodePath("../../../Player")
+default_player = NodePath("../../../Player")
 
-[node name="Hand" parent="UI/Control" instance=ExtResource("4_ryrav")]
+[node name="Hand1" parent="UI/Control" node_paths=PackedStringArray("player") instance=ExtResource("4_ryrav")]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
+player = NodePath("../../../Player")
+
+[node name="Hand2" parent="UI/Control" node_paths=PackedStringArray("player") instance=ExtResource("4_ryrav")]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+player = NodePath("../../../Player2")
 
 [node name="View" type="Camera2D" parent="."]
 offset = Vector2(575, 325)
@@ -51,4 +58,10 @@ position = Vector2(550, 325)
 [node name="Player" type="Node" parent="." node_paths=PackedStringArray("board", "hand_holder")]
 script = ExtResource("5_7jktm")
 board = NodePath("../ModularBoard")
-hand_holder = NodePath("../UI/Control/Hand")
+hand_holder = NodePath("../UI/Control/Hand1")
+
+[node name="Player2" type="Node" parent="." node_paths=PackedStringArray("board", "hand_holder")]
+script = ExtResource("5_7jktm")
+board = NodePath("../ModularBoard")
+hand_holder = NodePath("../UI/Control/Hand2")
+player_id = 2
