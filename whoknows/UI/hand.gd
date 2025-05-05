@@ -3,7 +3,7 @@ extends PanelContainer
 @export var player: Node = null
 
 func add_coin(coin):
-	$"../Coin Menu".create_coin_button(coin, player, $HBoxContainer, true)
+	$"../Coin Menu".create_coin_button(coin, player, $HBoxContainer)
 
 func remove_coin(index):
 	$HBoxContainer.remove_child($HBoxContainer.get_child(index))

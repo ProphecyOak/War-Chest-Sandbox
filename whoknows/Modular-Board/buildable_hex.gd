@@ -8,6 +8,7 @@ const controlColors = [
 	"74cd68", # Green for unclaimed
 	"b5a438", # Gold for player 1
 	"436666", # Gray-Blue for player 2
+	"660000", # Red for undefined player color
 ]
 const hexColors = {
 	"": "ffffff",
@@ -72,11 +73,12 @@ func _ready():
 	$Label.visible = Global.DEBUG
 
 func toggle_editing(value: bool):
+	$Actions.visible = !value
 	if !initialized:
 		visible = value
 		return
 	$Delete.visible = value
-	$Actions.visible = !value
+	
 
 var action_set = ["","","","",""]
 func display_actions(actions):
@@ -106,19 +108,38 @@ func add_coin(player):
 	new_coin.texture_normal = load("res://Assets/Unit Icons/%s.png" % player.selected_coin)
 	new_coin.connect("pressed", player.select_hex.bind(self))
 
+var action_logs = {
+	"Control": ["%s controls %s", 2],
+	"Move": ["%s moves to %s", 2],
+	"Attack": ["%s attacks the unit on %s", 2],
+	"Construct": ["%s constructs a fort on %s", 2],
+	"Deploy": ["%s deploys on %s", 2],
+	"Bolster": ["%s bolsters", 1],
+	"Destroy": ["%s destroys the fort on %s", 2],
+	"Poison": ["%s poisons the unit on %s", 2],
+	"Sacrifice": ["%s sacrifices themself", 1],
+	"Shock": ["%s shocks the unit on %s", 2]
+}
+
 func resolveAction(action_num):
 	var player = $"../..".current_player
 	var action = action_set[action_num]
 	player.use_coin()
-	print("%s from %s" % [action, player.selected_coin])
+	var origin = player.selected_hex
+	var log_frame = action_logs[action]
+	if log_frame[1] == 1: print(log_frame[0] % [player.selected_coin])
+	elif log_frame[1] == 2: print(log_frame[0] % [player.selected_coin, coordinates])
+	var select_new_hex = false
 	match action:
 		"Control":
-			if type != "Control": return
-			controlled_by = player.player_id
-			board.wipe_actions()
+			if Global.current_mode == Global.User_Mode.Set_Control_Spots:
+				controlled_by = int(controlled_by + 1) % (len(controlColors) - 1)
+				return
+			if type != "Control": print("Invalid Control")
+			controlled_by = min(player.player_id + 1, len(controlColors) - 1)
 		"Move":
-			var origin = player.selected_hex
-			if !origin or !origin.has_coin(): return
+			select_new_hex = true
+			if !origin or !origin.has_coin(): print("Invalid Move")
 			for coin in origin.coin_holder.get_children():
 				origin.coin_holder.remove_child(coin)
 				coin_holder.add_child(coin)
@@ -128,23 +149,16 @@ func resolveAction(action_num):
 			player.move_unit(self)
 			coins = origin.coins
 			origin.coins = []
-			board.wipe_actions()
 		"Attack":
 			remove_coin()
-			board.wipe_actions()
 		"Construct":
 			pass
 		"Deploy":
+			origin = self
 			add_coin(player)
 			player.move_unit(self)
-			if Global.current_mode == Global.User_Mode.Coin_Placing:
-				assign_action_spot("Bolster", action_num)
-				return
-			board.wipe_actions()
 		"Bolster":
 			add_coin(player)
-			if Global.current_mode == Global.User_Mode.Coin_Placing: return
-			board.wipe_actions()
 		"Destroy":
 			pass
 		"Poison":
@@ -153,3 +167,7 @@ func resolveAction(action_num):
 			pass
 		"Shock":
 			pass
+	board.wipe_actions()
+	if Global.current_mode == Global.User_Mode.Sandbox:
+		if select_new_hex: player.select_hex(self)
+		else: player.select_hex(origin)

@@ -32,8 +32,7 @@ board = NodePath("../../../ModularBoard")
 [node name="Coin Menu" parent="UI/Control" instance=ExtResource("4_fc0e3")]
 visible = false
 layout_mode = 2
-size_flags_horizontal = 8
-alignment = 0
+size_flags_vertical = 1
 coin_size = Vector2(75, 75)
 
 [node name="Hand1" parent="UI/Control" node_paths=PackedStringArray("player") instance=ExtResource("4_ryrav")]

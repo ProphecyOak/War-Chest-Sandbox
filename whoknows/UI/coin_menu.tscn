@@ -3,24 +3,40 @@
 [ext_resource type="StyleBox" uid="uid://corepm1gt3jdo" path="res://UI/UI-panel.tres" id="1_d724h"]
 [ext_resource type="Script" uid="uid://d1apf0stsxr85" path="res://UI/coin_menu.gd" id="1_fc1t1"]
 
-[node name="Coin Menu" type="PanelContainer" node_paths=PackedStringArray("coin_button_container")]
-custom_minimum_size = Vector2(20, 20)
+[node name="Coin Menu" type="HBoxContainer" node_paths=PackedStringArray("coin_button_container")]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_bottom = 20.0
+grow_horizontal = 0
+alignment = 2
+script = ExtResource("1_fc1t1")
+coin_button_container = NodePath("Coin list/ScrollContainer/MarginContainer/Buttons")
+coin_icon_path = "res://Assets/Unit Icons"
+
+[node name="PlayerSelect" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Coin list" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(20, 800)
+layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 theme_override_styles/panel = ExtResource("1_d724h")
-script = ExtResource("1_fc1t1")
-coin_button_container = NodePath("ScrollContainer/MarginContainer/Buttons")
-coin_icon_path = "res://Assets/Unit Icons"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="Coin list"]
 layout_mode = 2
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="Coin list/ScrollContainer"]
 layout_mode = 2
 theme_override_constants/margin_right = 10
 
-[node name="Buttons" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
+[node name="Buttons" type="VBoxContainer" parent="Coin list/ScrollContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[connection signal="item_selected" from="PlayerSelect" to="." method="change_player"]

@@ -15,15 +15,15 @@ func select_coin(coin, from_hand):
 	board.wipe_actions()
 	coin_from_hand = from_hand
 	selected_coin = coin
-	if Global.current_mode == Global.User_Mode.Coin_Placing:
+	if Global.current_mode == Global.User_Mode.Sandbox:
 		unlock_deploy()
 		return
 	if units_in_play[coin]: select_hex(units_in_play[coin])
 	else: for hex in board.control_spots:
-		if hex.controlled_by == player_id: hex.display_actions(["Deploy"])
+		if hex.controlled_by == player_id + 1: hex.display_actions(["Deploy"])
 
 func use_coin():
-	if !coin_from_hand or Global.current_mode == Global.User_Mode.Coin_Placing: return
+	if !coin_from_hand or Global.current_mode == Global.User_Mode.Sandbox: return
 	var coin_index = hand.find(selected_coin)
 	hand.remove_at(coin_index)
 	hand_holder.remove_coin(coin_index)
@@ -51,7 +51,7 @@ func unlock_deploy():
 
 func select_hex(hex):
 	selected_hex = hex
-	if hex.type == "Control" and hex.controlled_by != player_id: hex.display_actions(["Control"])
+	if hex.type == "Control" and hex.controlled_by != player_id + 1: hex.display_actions(["Control"])
 	hex.display_actions(["Bolster"])
 	for neighbor in board.get_hex_neighbors(hex, false):
 		if !neighbor: continue

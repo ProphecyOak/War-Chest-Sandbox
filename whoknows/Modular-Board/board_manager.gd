@@ -20,6 +20,7 @@ var boundaries:
 var control_spots = []
 
 func _ready():
+	$CenterHex.toggle_editing(true)
 	hexes[0].append($CenterHex)
 
 func get_true_coords(location: Vector2i):
@@ -63,6 +64,7 @@ func new_hex(coordinates: Vector2i, type=null, hex_owner=null):
 	if type:
 		hex.type = type
 		hex.initialized = true
+	hex.toggle_editing(!hex.initialized)
 	if hex_owner:
 		hex.controlled_by = hex_owner
 	add_child(hex)
@@ -154,12 +156,13 @@ func save():
 	for rank in range(boardSize.y):
 		for file in range(boardSize.x):
 			var hex = hexes[rank][file]
-			if hex and hex.type != "": serialized_board.append({
-				"x": hex.coordinates.x,
-				"y": hex.coordinates.y,
-				"type": hex.type,
-				"owner": hex.controlled_by
-			})
+			if hex and hex.type != "":
+				serialized_board.append({
+					"x": hex.coordinates.x,
+					"y": hex.coordinates.y,
+					"type": hex.type,
+					"owner": hex.controlled_by
+				})
 	return {
 		"Node": get_path(),
 		"Board": serialized_board,

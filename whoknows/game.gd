@@ -4,7 +4,7 @@ extends Node2D
 @onready var board = $ModularBoard
 const camSpeed = 450
 
-var current_player: Node
+@onready var current_player: Node
 var current_player_index = 0
 var next_player_index:
 	get:
@@ -28,15 +28,24 @@ func _process(delta):
 
 func register_player(player):
 	players.append(player)
+	player.player_id = len(players) - 1
+	$"UI/Control/Coin Menu".register_player(player)
 
-func change_player(new_player_index = next_player_index):
+func change_player(new_player_index = next_player_index, unlock=true):
 	current_player = players[new_player_index]
 	current_player_index = new_player_index
-	current_player.set_hand_lock(false)
+	if unlock: current_player.set_hand_lock(false)
 
 func end_turn(player):
 	player.set_hand_lock(true)
 	change_player()
+
+func unlock_current():
+	current_player.set_hand_lock(false)
+
+func lock_all_hands():
+	for player in players:
+		player.set_hand_lock(true)
 
 func save_game():
 	var save_file = FileAccess.open(Global.savegame_address, FileAccess.WRITE)
@@ -80,3 +89,4 @@ func _ready():
 	for player in players:
 		player.set_hand_lock(true)
 	change_player(0)
+	$"UI/Control/Coin Menu".initialize_list()

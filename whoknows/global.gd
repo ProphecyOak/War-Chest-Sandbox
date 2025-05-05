@@ -7,7 +7,7 @@ const player_count = 2
 enum User_Mode {
 	Board_Edit,
 	View,
-	Coin_Placing,
+	Sandbox,
 	Set_Control_Spots
 }
 
