@@ -3,11 +3,20 @@ extends PanelContainer
 @export var board: BoardManager = null
 
 func on_mode_select(mode):
-	if Global.current_mode == Global.User_Mode.Board_Edit:
-		board.set_edit_mode(false)
+	for rank in range(board.boardSize.y):
+		for file in range(board.boardSize.x):
+			var hex = board.hexes[rank][file]
+			if hex: hex.clear_actions()
+	if Global.current_mode == Global.User_Mode.Board_Edit: board.set_edit_mode(false)
+	if Global.current_mode == Global.User_Mode.Set_Control_Spots: board.set_control_mode(false)
 	match mode:
 		"View":
 			Global.current_mode = Global.User_Mode.View
 		"Board-Edit":
 			Global.current_mode = Global.User_Mode.Board_Edit
 			board.set_edit_mode(true)
+		"Coin":
+			Global.current_mode = Global.User_Mode.Coin_Placing
+		"Set_Control_Spots":
+			Global.current_mode = Global.User_Mode.Set_Control_Spots
+			board.set_control_mode(true)

@@ -4,7 +4,6 @@ extends Node2D
 @onready var buildableHexScene = preload("res://Modular-Board/buildable_hex.tscn")
 
 var hexes = [[]]
-var edge_hexes = []
 var hex_count = 1:
 	set(new_count):
 		hex_count = new_count
@@ -49,7 +48,7 @@ func get_hex(location: Vector2i, generate=true):
 	if !found_hex and generate: found_hex = new_hex(location)
 	return found_hex
 
-func new_hex(coordinates: Vector2i, type=null):
+func new_hex(coordinates: Vector2i, type=null, hex_owner=null):
 	ensure_coordinates(coordinates)
 	var hex = buildableHexScene.instantiate()
 	hex.coordinates = coordinates
@@ -62,11 +61,12 @@ func new_hex(coordinates: Vector2i, type=null):
 	if type:
 		hex.type = type
 		hex.initialized = true
+	if hex_owner:
+		hex.controlled_by = hex_owner
 	add_child(hex)
 	hex.set_owner(self)
 	var true_loc = get_true_coords(hex.coordinates)
 	hexes[true_loc.y][true_loc.x] = hex
-	edge_hexes.append(hex)
 	hex_count += 1
 	return hex
 
@@ -75,6 +75,14 @@ func set_edit_mode(value: bool):
 		for hex in rank:
 			if !hex: continue
 			hex.toggle_editing(value)
+
+func set_control_mode(value: bool):
+	for rank in range(boardSize.y):
+		for file in range(boardSize.x):
+			var hex = hexes[rank][file]
+			if hex == null: continue
+			if value and hex.type == "Control": hex.display_actions(["Control"])
+			else: hex.clear_actions()
 
 const hex_basis = {
 	"x": Vector2(BuildableHex.width * .75, -BuildableHex.height * .5),
@@ -95,13 +103,11 @@ func get_hex_neighbors(hex: BuildableHex, generate=true) -> Array[BuildableHex]:
 	]
 
 func setup_hex(hex: BuildableHex):
-	edge_hexes.erase(hex)
 	get_hex_neighbors(hex).map(
 		func (x): x.visible = x.initialized or Global.current_mode == Global.User_Mode.Board_Edit
 	)
 
 func remove_hex(hex: BuildableHex):
-	print("Deleting %s" % hex.coordinates)
 	var unitialized_neighbors: Array[BuildableHex] = get_hex_neighbors(hex, false).filter(
 		func (x): return x != null and !x.initialized
 		)
@@ -140,10 +146,10 @@ func save():
 		for file in range(boardSize.x):
 			var hex = hexes[rank][file]
 			if hex and hex.type != "": serialized_board.append({
-				"generated": true,
 				"x": hex.coordinates.x,
 				"y": hex.coordinates.y,
-				"type": hex.type
+				"type": hex.type,
+				"owner": hex.controlled_by
 			})
 	return {
 		"Node": get_path(),
@@ -159,6 +165,6 @@ func load_from_save(data: Dictionary):
 	for field in expected_data: if !data.keys().has(field): return
 	kill_hex($CenterHex)
 	for hexData in data["Board"]:
-		if !hexData["generated"] or hexData["type"] == "": continue
+		if hexData["type"] == "": continue
 		var hex_coords = Vector2i(hexData["x"], hexData["y"])
-		setup_hex(new_hex(hex_coords, hexData["type"]))
+		setup_hex(new_hex(hex_coords, hexData["type"], hexData["owner"]))

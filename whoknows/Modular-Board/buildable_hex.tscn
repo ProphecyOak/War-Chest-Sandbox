@@ -61,7 +61,62 @@ theme_override_font_sizes/font_size = 5
 theme_override_styles/normal = SubResource("StyleBoxFlat_ggq2j")
 text = "X"
 
+[node name="Coins" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Actions" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Action 1" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = 5.0
+offset_top = -45.0
+offset_right = 35.0
+offset_bottom = -15.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 2" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = 15.0
+offset_top = -10.0
+offset_right = 25.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 3" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -15.0
+offset_top = 15.0
+offset_right = 15.0
+offset_bottom = 45.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 4" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -45.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 20.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 5" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -35.0
+offset_top = -45.0
+offset_right = -5.0
+offset_bottom = -15.0
+ignore_texture_size = true
+stretch_mode = 5
+
 [connection signal="pressed" from="Build Options/Normal" to="." method="on_initialize" binds= ["Normal"]]
 [connection signal="pressed" from="Build Options/Control" to="." method="on_initialize" binds= ["Control"]]
 [connection signal="pressed" from="Build Options/Empty" to="." method="on_initialize" binds= ["Empty"]]
 [connection signal="pressed" from="Delete" to="." method="on_delete"]
+[connection signal="pressed" from="Actions/Action 1" to="." method="resolveAction" binds= [0]]
+[connection signal="pressed" from="Actions/Action 2" to="." method="resolveAction" binds= [1]]
+[connection signal="pressed" from="Actions/Action 3" to="." method="resolveAction" binds= [2]]
+[connection signal="pressed" from="Actions/Action 4" to="." method="resolveAction" binds= [3]]
+[connection signal="pressed" from="Actions/Action 5" to="." method="resolveAction" binds= [4]]

@@ -15,9 +15,9 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="Mode Selector" type="PanelContainer"]
-offset_top = 35.0
-offset_right = 90.0
-offset_bottom = 66.0
+offset_right = 113.0
+offset_bottom = 111.0
+size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_0uxs5")
 script = ExtResource("1_krucf")
 
@@ -37,5 +37,19 @@ toggle_mode = true
 button_group = ExtResource("2_7ttjv")
 text = "Board-Edit"
 
+[node name="Coin Mode" type="Button" parent="Buttons"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("2_7ttjv")
+text = "Coin-Placing"
+
+[node name="Control Mode" type="Button" parent="Buttons"]
+layout_mode = 2
+toggle_mode = true
+button_group = ExtResource("2_7ttjv")
+text = "Set Control Spots"
+
 [connection signal="pressed" from="Buttons/View Mode" to="." method="on_mode_select" binds= ["View"]]
 [connection signal="pressed" from="Buttons/Board-Edit Mode" to="." method="on_mode_select" binds= ["Board-Edit"]]
+[connection signal="pressed" from="Buttons/Coin Mode" to="." method="on_mode_select" binds= ["Coin"]]
+[connection signal="pressed" from="Buttons/Control Mode" to="." method="on_mode_select" binds= ["Set_Control_Spots"]]

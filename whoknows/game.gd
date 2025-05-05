@@ -58,4 +58,3 @@ func load_game():
 
 func _ready():
 	load_game()
-	print("Starting with %s mode" % str(Global.current_mode))

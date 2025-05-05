@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://tkulmpxsmgsx"]
+
+[ext_resource type="Script" uid="uid://d1apf0stsxr85" path="res://UI/coin_menu.gd" id="1_fc1t1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0uxs5"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 5.0
+content_margin_bottom = 10.0
+bg_color = Color(0.234421, 0.680007, 0.639332, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="Coin Menu" type="PanelContainer" node_paths=PackedStringArray("coin_button_container")]
+custom_minimum_size = Vector2(20, 20)
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_0uxs5")
+script = ExtResource("1_fc1t1")
+coin_button_container = NodePath("ScrollContainer/MarginContainer/Buttons")
+coin_icon_path = "res://Assets/Unit Icons"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 10
+
+[node name="Buttons" type="VBoxContainer" parent="ScrollContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
