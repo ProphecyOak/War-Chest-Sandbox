@@ -8,22 +8,22 @@ extends PanelContainer
 
 func _ready():
 	for icon in DirAccess.get_files_at(coin_icon_path):
-		if !("import" in icon): create_coin_button(icon)
+		if !("import" in icon): create_coin_button(icon.substr(0, len(icon) - 4))
 
 
-func create_coin_button(icon: String):
+func create_coin_button(icon: String, destination=coin_button_container, from_hand = false):
 	var new_button = TextureButton.new()
-	coin_button_container.add_child(new_button)
+	destination.add_child(new_button)
 	new_button.custom_minimum_size = coin_size
 	new_button.ignore_texture_size = true
 	new_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	new_button.toggle_mode = true
 	new_button.button_group = load("res://UI/Coin-Select-Button-Group.tres")
-	var normal_image = load("%s/%s" % [coin_icon_path, icon]).get_image()
+	var normal_image = load("%s/%s.png" % [coin_icon_path, icon]).get_image()
 	var toggled_image = darken_image(normal_image)
 	new_button.texture_normal = ImageTexture.create_from_image(normal_image)
 	new_button.texture_pressed = ImageTexture.create_from_image(toggled_image)
-	new_button.connect("pressed", player_handler.select_coin.bind(icon.substr(0, len(icon) - 4)))
+	new_button.connect("pressed", player_handler.select_coin.bind(icon, from_hand))
 
 func darken_image(img):
 	var darkened = Image.new()

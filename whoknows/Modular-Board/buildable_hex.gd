@@ -3,7 +3,7 @@ extends Node2D
 
 const width = 115.47
 const height = 100
-const coinOffset = 40
+const coinOffset = 7
 const controlColors = [
 	"74cd68", # Green for unclaimed
 	"b5a438", # Gold for player 1
@@ -18,6 +18,7 @@ const hexColors = {
 
 @onready var action_spots = $Actions.get_children()
 @onready var coin_holder = $Coins
+var coin_prefab = load("res://Modular-Board/Coin.tscn")
 var coins = []
 @onready var player = get_node("../../Player")
 @export var board: BoardManager = null
@@ -48,7 +49,7 @@ func get_coin(i):
 	}
 
 func remove_coin():
-	coin_holder.remove_child(coin_holder.get_children()[len(coins)-1])
+	coin_holder.remove_child(get_coin(len(coins)-1)["Node"])
 	coins.remove_at(len(coins)-1)
 
 func on_initialize(new_type: String):
@@ -93,29 +94,53 @@ func clear_actions():
 	action_set = ["","","","",""]
 	for action_num in range(5): action_spots[action_num].visible = false
 
+func add_coin():
+	var new_coin = coin_prefab.instantiate()
+	coin_holder.add_child(new_coin)
+	new_coin.set_owner(coin_holder)
+	coins.append(player.selected_coin)
+	new_coin.position.y -= len(coin_holder.get_children()) * coinOffset - 20
+	new_coin.texture_normal = load("res://Assets/Unit Icons/%s.png" % player.selected_coin)
+	new_coin.connect("pressed", player.select_hex.bind(self))
+
 func resolveAction(action_num):
 	var action = action_set[action_num]
+	player.use_coin()
+	print("%s from %s" % [action, player.selected_coin])
 	match action:
 		"Control":
 			if type != "Control": return
 			controlled_by = (controlled_by + 1) % (Global.player_count + 1)
+			board.wipe_actions()
 		"Move":
-			pass
+			var origin = player.selected_hex
+			if !origin or !origin.has_coin(): return
+			for coin in origin.coin_holder.get_children():
+				origin.coin_holder.remove_child(coin)
+				coin_holder.add_child(coin)
+				coin.set_owner(coin_holder)
+				coin.disconnect("pressed", player.select_hex.bind(origin))
+				coin.connect("pressed", player.select_hex.bind(self))
+			player.move_unit(self)
+			coins = origin.coins
+			origin.coins = []
+			board.wipe_actions()
 		"Attack":
-			pass
+			remove_coin()
+			board.wipe_actions()
 		"Construct":
 			pass
 		"Deploy":
-			var new_coin = Sprite2D.new()
-			coin_holder.add_child(new_coin)
-			coins.append(player.selected_coin)
-			new_coin.set_owner(coin_holder)
-			new_coin.scale = Vector2(.2,.2)
-			new_coin.offset.y -= len(coin_holder.get_children()) * coinOffset - 60
-			new_coin.texture = load("res://Assets/Unit Icons/%s.png" % player.selected_coin)
-			if Global.current_mode == Global.User_Mode.Coin_Placing: assign_action_spot("Bolster", action_num)
+			add_coin()
+			player.move_unit(self)
+			if Global.current_mode == Global.User_Mode.Coin_Placing:
+				assign_action_spot("Bolster", action_num)
+				return
+			board.wipe_actions()
 		"Bolster":
-			pass
+			add_coin()
+			if Global.current_mode == Global.User_Mode.Coin_Placing: return
+			board.wipe_actions()
 		"Destroy":
 			pass
 		"Poison":

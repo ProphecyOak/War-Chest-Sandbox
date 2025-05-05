@@ -126,7 +126,14 @@ func kill_hex(hex):
 	remove_child(hex)
 	hex.queue_free()
 	hex_count -= 1
-	# TODO: Modify the board and board size potentially
+	# TODO: Modify the board and board size potentially for camera limits
+
+func wipe_actions():
+	for rank in range(boardSize.y):
+		for file in range(boardSize.x):
+			var hex = hexes[rank][file]
+			if !hex: continue
+			hex.clear_actions()
 
 func print_hexes():
 	var out = ""
