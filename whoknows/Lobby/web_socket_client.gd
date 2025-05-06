@@ -10,6 +10,7 @@ signal data_received
 signal socket_disconnected
 
 func on_join():
+	if latest_state != WebSocketPeer.STATE_CLOSED: return
 	var err = client.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect to server.")
@@ -18,8 +19,12 @@ func on_join():
 func on_close():
 	client.close()
 
-func on_send():
-	client.send_text("{'response': 'Beep Boop from %s'}" % "network_id")
+func on_send(message = null):
+	if latest_state != WebSocketPeer.STATE_OPEN: return
+	if !message:
+		print("Client sending test message")
+		client.send_text('{"body":"Test Message"}')
+		return
 
 func poll():
 	client.poll()
@@ -29,16 +34,18 @@ func poll():
 		$"../LobbyControls/Buttons/Peer-ID".text = "Client: %s with Status: %s" % ["network_id", latest_state]
 		match latest_state:
 			WebSocketPeer.STATE_OPEN:
-				client.send_text("User connected.")
 				emit_signal("socket_connected")
 			WebSocketPeer.STATE_CLOSED:
 				var code = client.get_close_code()
 				emit_signal("socket_disconnected", code)
 	if latest_state == WebSocketPeer.STATE_OPEN:
 		while client.get_available_packet_count():
-			var data = client.get_packet().get_string_from_utf8()
-			emit_signal("data_received", data)
-			print(data)
+			var packet = client.get_packet()
+			if client.was_string_packet():
+				var data = packet.get_string_from_utf8()
+				emit_signal("data_received", data)
+				print("Client: %s" % data)
+			else: print("Client: %s" % packet)
 
 func _process(_delta):
 	poll()
