@@ -11,6 +11,16 @@ var next_player_index:
 		return (current_player_index + 1) % len(players)
 var players = []
 
+var game_rng = RandomNumberGenerator.new()
+
+func _ready():
+	game_rng.seed = hash(232340)
+	load_game()
+	for player in players:
+		player.set_hand_lock(true)
+	change_player(0)
+	$"UI/Control/Coin Menu".initialize_list()
+
 func _input(event):
 	if event.is_action_pressed("Save"): save_game()
 	if event.is_action_pressed("Center"): cam.position = Vector2(0,0)
@@ -83,10 +93,3 @@ func load_game():
 		var node_data = json.data
 		get_node(node_data["Node"]).load_from_save(node_data)
 	return
-
-func _ready():
-	load_game()
-	for player in players:
-		player.set_hand_lock(true)
-	change_player(0)
-	$"UI/Control/Coin Menu".initialize_list()
