@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Unit" load_steps=2 format=3 uid="uid://i3fto536t1fx"]
+
+[ext_resource type="Script" uid="uid://cm34udyjjue1h" path="res://Resources/Unit.gd" id="1_3pani"]
+
+[resource]
+script = ExtResource("1_3pani")
+name = "Pikeman"
+image_name = ""
+quantity = 4
+metadata/_custom_type_script = "uid://cm34udyjjue1h"

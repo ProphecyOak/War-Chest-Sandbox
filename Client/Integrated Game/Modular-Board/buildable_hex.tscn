@@ -1,0 +1,122 @@
+[gd_scene load_steps=6 format=3 uid="uid://cp6wwdihak0h6"]
+
+[ext_resource type="Script" uid="uid://tmoyn74bt8j5" path="res://Integrated Game/Modular-Board/buildable_hex.gd" id="1_hw38n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hw38n"]
+bg_color = Color(0.792157, 0.694118, 0.462745, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m106v"]
+bg_color = Color(0.454902, 0.803922, 0.407843, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_earf3"]
+bg_color = Color(0.466667, 0.552941, 0.619608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ggq2j"]
+bg_color = Color(0.55, 0.1485, 0.1485, 1)
+
+[node name="BuildableHex" type="Node2D"]
+scale = Vector2(0.95, 0.95)
+script = ExtResource("1_hw38n")
+
+[node name="Backing" type="Polygon2D" parent="."]
+antialiased = true
+polygon = PackedVector2Array(-28.867, -50, 28.867, -50, 57.735, 0, 28.867, 50, -28.867, 50, -57.735, 0)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -40.0
+offset_top = -15.0
+offset_bottom = 8.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+
+[node name="Build Options" type="Node2D" parent="."]
+
+[node name="Normal" type="Button" parent="Build Options"]
+offset_left = -10.0
+offset_top = -33.0
+offset_right = 10.0
+offset_bottom = -14.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_hw38n")
+
+[node name="Control" type="Button" parent="Build Options"]
+offset_left = -10.0
+offset_top = -9.0
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_m106v")
+
+[node name="Empty" type="Button" parent="Build Options"]
+offset_left = -10.0
+offset_top = 14.0
+offset_right = 10.0
+offset_bottom = 33.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_earf3")
+
+[node name="Delete" type="Button" parent="."]
+visible = false
+offset_left = 37.8947
+offset_top = -7.36842
+offset_right = 49.8947
+offset_bottom = 8.63158
+theme_override_font_sizes/font_size = 5
+theme_override_styles/normal = SubResource("StyleBoxFlat_ggq2j")
+text = "X"
+
+[node name="Coins" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Actions" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Action 1" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = 5.0
+offset_top = -45.0
+offset_right = 35.0
+offset_bottom = -15.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 2" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = 15.0
+offset_top = -10.0
+offset_right = 25.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 3" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -15.0
+offset_top = 15.0
+offset_right = 15.0
+offset_bottom = 45.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 4" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -45.0
+offset_top = -10.0
+offset_right = -15.0
+offset_bottom = 20.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Action 5" type="TextureButton" parent="Actions"]
+custom_minimum_size = Vector2(30, 30)
+offset_left = -35.0
+offset_top = -45.0
+offset_right = -5.0
+offset_bottom = -15.0
+ignore_texture_size = true
+stretch_mode = 5
+
+[connection signal="pressed" from="Build Options/Normal" to="." method="on_initialize" binds= ["Normal"]]
+[connection signal="pressed" from="Build Options/Control" to="." method="on_initialize" binds= ["Control"]]
+[connection signal="pressed" from="Build Options/Empty" to="." method="on_initialize" binds= ["Empty"]]
+[connection signal="pressed" from="Delete" to="." method="on_delete"]
+[connection signal="pressed" from="Actions/Action 1" to="." method="resolveAction" binds= [0]]
+[connection signal="pressed" from="Actions/Action 2" to="." method="resolveAction" binds= [1]]
+[connection signal="pressed" from="Actions/Action 3" to="." method="resolveAction" binds= [2]]
+[connection signal="pressed" from="Actions/Action 4" to="." method="resolveAction" binds= [3]]
+[connection signal="pressed" from="Actions/Action 5" to="." method="resolveAction" binds= [4]]

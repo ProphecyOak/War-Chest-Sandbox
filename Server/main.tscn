@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://b23mcmr61apt5"]
+[gd_scene load_steps=7 format=3 uid="uid://b23mcmr61apt5"]
 
 [ext_resource type="Script" uid="uid://fkuslid0ql5u" path="res://Display/log.gd" id="1_0xm2m"]
 [ext_resource type="Script" uid="uid://squafa6ycs70" path="res://Display/control_panel.gd" id="1_h2yge"]
-[ext_resource type="Script" uid="uid://dsv7aeia6v0na" path="res://web_socket.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://dsv7aeia6v0na" path="res://Management/web_socket.gd" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://cgfp3sxk2j748" path="res://Display/status_indicator.gd" id="2_1bvp3"]
-[ext_resource type="Script" uid="uid://bqyya7msotl3p" path="res://room_manager.gd" id="5_lquwl"]
+[ext_resource type="Script" uid="uid://chcr5dvo8jbnm" path="res://Display/clients.gd" id="4_7mycd"]
+[ext_resource type="Script" uid="uid://bqyya7msotl3p" path="res://Management/room_manager.gd" id="5_lquwl"]
 
 [node name="Main" type="Node"]
 
@@ -27,67 +28,86 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Display/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Display/MarginContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Display/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Display/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Control Panel" type="CenterContainer" parent="Display/MarginContainer/VBoxContainer/HBoxContainer" node_paths=PackedStringArray("web_socket")]
+[node name="Control Panel" type="CenterContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer" node_paths=PackedStringArray("web_socket")]
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("1_h2yge")
-web_socket = NodePath("../../../../../WebSocket")
+web_socket = NodePath("../../../../../../WebSocket")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel"]
 layout_mode = 2
 
-[node name="StartButton" type="Button" parent="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer"]
+[node name="StartButton" type="Button" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 text = "Start"
 
-[node name="StopButton" type="Button" parent="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer"]
+[node name="StopButton" type="Button" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
 text = "Stop"
 
-[node name="Status Indicator" type="CenterContainer" parent="Display/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Status Indicator" type="CenterContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 script = ExtResource("2_1bvp3")
 
-[node name="ColorRect" type="ColorRect" parent="Display/MarginContainer/VBoxContainer/HBoxContainer/Status Indicator"]
+[node name="ColorRect" type="ColorRect" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator"]
 custom_minimum_size = Vector2(15, 15)
 layout_mode = 2
 color = Color(1, 0, 0, 1)
 
-[node name="Log" type="ScrollContainer" parent="Display/MarginContainer/VBoxContainer"]
+[node name="Log" type="ScrollContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 script = ExtResource("1_0xm2m")
 
-[node name="PanelContainer" type="PanelContainer" parent="Display/MarginContainer/VBoxContainer/Log"]
+[node name="PanelContainer" type="PanelContainer" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/Log"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="Display/MarginContainer/VBoxContainer/Log/PanelContainer"]
+[node name="Label" type="Label" parent="Display/MarginContainer/HBoxContainer/VBoxContainer/Log/PanelContainer"]
 layout_mode = 2
 size_flags_vertical = 1
 
-[node name="WebSocket" type="Node" parent="." node_paths=PackedStringArray("logger")]
+[node name="Clients" type="MarginContainer" parent="Display/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Display/MarginContainer/HBoxContainer/Clients" node_paths=PackedStringArray("web_socket")]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+script = ExtResource("4_7mycd")
+web_socket = NodePath("../../../../../WebSocket")
+
+[node name="WebSocket" type="Node" parent="." node_paths=PackedStringArray("logger", "client_list")]
 script = ExtResource("1_ig7tw")
-logger = NodePath("../Display/MarginContainer/VBoxContainer/Log")
+logger = NodePath("../Display/MarginContainer/HBoxContainer/VBoxContainer/Log")
+client_list = NodePath("../Display/MarginContainer/HBoxContainer/Clients/VBoxContainer")
 
-[node name="RoomManager" type="Node" parent="." node_paths=PackedStringArray("logger")]
+[node name="RoomManager" type="Node" parent="." node_paths=PackedStringArray("logger", "web_socket")]
 script = ExtResource("5_lquwl")
-logger = NodePath("../Display/MarginContainer/VBoxContainer/Log")
+logger = NodePath("../Display/MarginContainer/HBoxContainer/VBoxContainer/Log")
+web_socket = NodePath("../WebSocket")
 
-[connection signal="pressed" from="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StartButton" to="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_start"]
-[connection signal="pressed" from="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StopButton" to="Display/MarginContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_stop"]
+[connection signal="pressed" from="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StartButton" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_start"]
+[connection signal="pressed" from="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StopButton" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_stop"]
 [connection signal="received_message" from="WebSocket" to="RoomManager" method="_on_web_socket_received_message"]
-[connection signal="server_closed" from="WebSocket" to="Display/MarginContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_closed"]
-[connection signal="server_started" from="WebSocket" to="Display/MarginContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_started"]
-[connection signal="server_starting" from="WebSocket" to="Display/MarginContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_starting"]
+[connection signal="server_closed" from="WebSocket" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_closed"]
+[connection signal="server_started" from="WebSocket" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_started"]
+[connection signal="server_starting" from="WebSocket" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_starting"]

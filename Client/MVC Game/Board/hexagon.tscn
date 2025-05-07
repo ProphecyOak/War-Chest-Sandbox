@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://huu6rkemlj3c"]
+
+[ext_resource type="Script" uid="uid://bcjeqxvo0gabn" path="res://MVC Game/Board/hexagon.gd" id="1_o1yk3"]
+
+[node name="Hexagon" type="Node2D"]
+script = ExtResource("1_o1yk3")
