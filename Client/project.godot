@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="WarChestSandbox"
+config/name="WarChest++ Client"
 run/main_scene="uid://cdo0v1uds5mne"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://Assets/icon.svg"
@@ -23,7 +23,6 @@ Global="*res://global.gd"
 
 window/size/viewport_width=1150
 window/size/viewport_height=650
-window/size/mode=2
 
 [input]
 

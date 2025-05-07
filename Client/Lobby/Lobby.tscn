@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://jp3e6w54jglo"]
+[gd_scene load_steps=2 format=3 uid="uid://jp3e6w54jglo"]
 
 [ext_resource type="Script" uid="uid://c58lg6sihij8u" path="res://Lobby/web_socket_client.gd" id="1_4ktdg"]
-[ext_resource type="Script" uid="uid://bvk7c6i5oox4u" path="res://Lobby/web_socket_server.gd" id="2_ctcp8"]
 
 [node name="Lobby" type="Node"]
 
@@ -11,10 +10,6 @@ offset_right = 650.0
 
 [node name="Buttons" type="VBoxContainer" parent="LobbyControls"]
 layout_mode = 2
-
-[node name="HostButton" type="Button" parent="LobbyControls/Buttons"]
-layout_mode = 2
-text = "Host"
 
 [node name="JoinButton" type="Button" parent="LobbyControls/Buttons"]
 layout_mode = 2
@@ -28,16 +23,13 @@ text = "Close"
 layout_mode = 2
 text = "Send"
 
-[node name="Peer-ID" type="Label" parent="LobbyControls/Buttons"]
+[node name="RoomCode" type="LineEdit" parent="LobbyControls/Buttons"]
 layout_mode = 2
+placeholder_text = "ABCD"
 
 [node name="WebSocketClient" type="Node" parent="."]
 script = ExtResource("1_4ktdg")
 
-[node name="WebSocketServer" type="Node" parent="."]
-script = ExtResource("2_ctcp8")
-
-[connection signal="pressed" from="LobbyControls/Buttons/HostButton" to="WebSocketServer" method="on_host"]
 [connection signal="pressed" from="LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
 [connection signal="pressed" from="LobbyControls/Buttons/CloseButton" to="WebSocketClient" method="on_close"]
 [connection signal="pressed" from="LobbyControls/Buttons/SendButton" to="WebSocketClient" method="on_send"]
