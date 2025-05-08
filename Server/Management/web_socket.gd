@@ -7,7 +7,6 @@ var socket_status = MultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED
 var is_socket_connected:
 	get:
 		return socket_status == MultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED
-var rooms = {}
 
 #region Signals
 signal server_starting
@@ -31,9 +30,17 @@ func on_peer_disconnected(peer_id: int):
 	logger.add_to_log("Client: %s disconnected." % peer_id)
 	client_list.client_disconnected(peer_id)
 
-func send_JSON(message, peer_id):
+func send(message, peer_id):
 	server.get_peer(peer_id).put_var(message)
 	logger.add_to_log("Sending message to client: %s." % peer_id)
+
+func send_Image(img: Image, peer_id):
+	var response = {
+		"error": false,
+		"op": "image",
+		"image": Marshalls.raw_to_base64(img.save_png_to_buffer())
+	}
+	server.get_peer(peer_id).put_var(response)
 
 #region Server Commands
 func start_server():

@@ -44,8 +44,8 @@ func poll():
 				emit_signal("socket_disconnected")
 	if socket_status == WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
 		while client.get_available_packet_count():
-			var data = client.get_var()
-			emit_signal("data_received", data)
+			var packet = client.get_packet()
+			emit_signal("data_received", packet)
 
 func _process(_delta):
 	poll()

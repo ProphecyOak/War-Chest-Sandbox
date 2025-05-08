@@ -1,4 +1,5 @@
 extends Node2D
+class_name GameManager
 
 var web_socket: WebSocketClient = null
 
@@ -45,6 +46,8 @@ func load_game():
 func _ready():
 	load_game()
 
+func render(data):
+	print(data)
 
 # Sets the hand to contain buttons for each coin in coins
 func update_hand(coins: Array[String]):

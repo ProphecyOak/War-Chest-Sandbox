@@ -1,13 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://5t7fc2u7u1k3"]
+[gd_scene load_steps=3 format=3 uid="uid://5t7fc2u7u1k3"]
 
 [ext_resource type="Script" uid="uid://duefdn0o7q2ag" path="res://MVC Game/game.gd" id="1_ykbwy"]
 [ext_resource type="Script" uid="uid://bso2bgwnt0cxf" path="res://MVC Game/Board/board.gd" id="2_yqwy8"]
-[ext_resource type="PackedScene" uid="uid://huu6rkemlj3c" path="res://MVC Game/Board/hexagon.tscn" id="3_g4n3h"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_ykbwy")
 
-[node name="Board" type="Node2D" parent="."]
+[node name="Board" type="Node2D" parent="." node_paths=PackedStringArray("game")]
 script = ExtResource("2_yqwy8")
-
-[node name="Hexagon" parent="Board" instance=ExtResource("3_g4n3h")]
+game = NodePath("..")

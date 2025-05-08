@@ -21,7 +21,7 @@ func _on_web_socket_received_message(peer_id: int, message_body: Dictionary):
 	match message_body["op"]:
 		"create_room":
 			var new_room_id = int(web_socket.server.generate_unique_id())
-			rooms[new_room_id] = Room.new(peer_id)
+			rooms[new_room_id] = Room.new(web_socket, peer_id)
 			registry[peer_id] = rooms[new_room_id]
 			response = {
 				"error": false,
@@ -45,4 +45,5 @@ func _on_web_socket_received_message(peer_id: int, message_body: Dictionary):
 					"error_code": "room_not_found",
 					"room_id": room_id
 				}
-	web_socket.send_JSON(response, peer_id)
+	web_socket.send(response, peer_id)
+	registry[peer_id].send_game(peer_id)

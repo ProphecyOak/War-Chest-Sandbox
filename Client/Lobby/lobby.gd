@@ -1,18 +1,17 @@
 extends Node
 
 @onready var game_scene: PackedScene = preload("res://MVC Game/game.tscn")
-var game: Node2D = null
+var game: GameManager = null
 
-func _on_web_socket_client_data_received(data):
+func _on_web_socket_client_data_received(packet: PackedByteArray):
+	var data = bytes_to_var(packet)
 	match typeof(data):
 		TYPE_STRING:
-			pass
-		Image:
-			pass
+			print("Received String:\n%s" % data)
 		TYPE_DICTIONARY:
 			handle_JSON(data)
 		_:
-			print(data)
+			print("Un-Supported Type: %s\n%s" % [typeof(data), data])
 
 
 func handle_JSON(data):
@@ -26,3 +25,12 @@ func handle_JSON(data):
 			game = game_scene.instantiate()
 			add_child(game)
 			game.web_socket = $WebSocketClient
+		"image":
+			var img = Image.new()
+			img.load_png_from_buffer(Marshalls.base64_to_raw(data["image"]))
+			var new_tex = ImageTexture.create_from_image(img)
+			var new_sprite = Sprite2D.new()
+			$".".add_child(new_sprite)
+			new_sprite.texture = new_tex
+		"game":
+			game.render(data["game_state"])
