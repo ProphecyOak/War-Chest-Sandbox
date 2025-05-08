@@ -12,6 +12,7 @@ var is_socket_connected:
 signal server_starting
 signal server_started
 signal received_message(peer_id, message_body)
+signal client_disconnected(peer_id)
 signal server_closed
 #endregion
 
@@ -27,7 +28,7 @@ func on_peer_connected(peer_id: int):
 	client_list.client_connected(peer_id)
 
 func on_peer_disconnected(peer_id: int):
-	logger.add_to_log("Client: %s disconnected." % peer_id)
+	emit_signal("client_disconnected", peer_id)
 	client_list.client_disconnected(peer_id)
 
 func send(message, peer_id):

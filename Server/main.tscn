@@ -107,6 +107,7 @@ web_socket = NodePath("../WebSocket")
 
 [connection signal="pressed" from="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StartButton" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_start"]
 [connection signal="pressed" from="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel/HBoxContainer/StopButton" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Control Panel" method="_on_click_stop"]
+[connection signal="client_disconnected" from="WebSocket" to="RoomManager" method="peer_disconnected_from_room"]
 [connection signal="received_message" from="WebSocket" to="RoomManager" method="_on_web_socket_received_message"]
 [connection signal="server_closed" from="WebSocket" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_closed"]
 [connection signal="server_started" from="WebSocket" to="Display/MarginContainer/HBoxContainer/VBoxContainer/HBoxContainer/Status Indicator" method="on_started"]

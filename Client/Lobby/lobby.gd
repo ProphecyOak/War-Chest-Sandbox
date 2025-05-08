@@ -2,6 +2,15 @@ extends Node
 
 @onready var game_scene: PackedScene = preload("res://MVC Game/game.tscn")
 var game: GameManager = null
+var room_host:
+	set(new_value):
+		room_host = new_value
+		var host_guest = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Host_Guest
+		host_guest.text = "You are the host of this room!\n" if room_host else "You are a guest of this room!\n"
+
+func _ready():
+	$LobbyControls.visible = true
+	$RoomControls.visible = false
 
 func _on_web_socket_client_data_received(packet: PackedByteArray):
 	var data = bytes_to_var(packet)
@@ -16,15 +25,20 @@ func _on_web_socket_client_data_received(packet: PackedByteArray):
 
 func handle_JSON(data):
 	if "error" in data.keys() and data["error"]:
-		print("Received an error with code: %s" % data["error_code"])
+		print("Received an error with code: %s\nOriginal Request:\n%s" % [data["error_code"], data["original_body"]])
+		return
+	if !("op" in data.keys()):
+		print("Received a faulty response:\n%s" % data)
 		return
 	match data["op"]:
 		"joined_room":
-			print("Joined room %s" % int(data["room_id"]))
-			$LobbyControls.visible = false
-			game = game_scene.instantiate()
-			add_child(game)
-			game.web_socket = $WebSocketClient
+			room_host = false
+			on_room_joined(data)
+		"created_room":
+			room_host = true
+			on_room_joined(data)
+		"make_host":
+			room_host = true
 		"image":
 			var img = Image.new()
 			img.load_png_from_buffer(Marshalls.base64_to_raw(data["image"]))
@@ -34,3 +48,15 @@ func handle_JSON(data):
 			new_sprite.texture = new_tex
 		"game":
 			game.render(data["game_state"])
+
+func on_room_joined(data):
+	$LobbyControls.visible = false
+	$RoomControls.visible = true
+	var room_id = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Room_ID
+	room_id.text = "Room ID: %s" % data["room_id"]
+
+func on_game_started(data):
+	game = game_scene.instantiate()
+	add_child(game)
+	game.set_owner(self)
+	game.web_socket = $WebSocketClient

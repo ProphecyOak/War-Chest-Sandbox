@@ -8,8 +8,11 @@ var room_actions = UndoRedo.new()
 
 func add_peer(peer_id: int):
 	connected_peers.append(peer_id)
+func remove_peer(peer_id: int):
+	connected_peers.erase(peer_id)
 
-func _init(web_socket_: WebSocketServer, peer_id: int):
+func _init(room_id_: int, web_socket_: WebSocketServer, peer_id: int):
+	room_id = room_id_
 	web_socket = web_socket_
 	game = Game.new()
 	add_peer(peer_id)
@@ -46,7 +49,7 @@ class Game:
 			"winning_score": winning_score,
 			"forts": forts,
 			"teams": teams.map(func (x): return x.get_JSON()),
-			"board": board.get_JSON(),
+			#"board": board.get_JSON(),
 		}
 
 class Player:

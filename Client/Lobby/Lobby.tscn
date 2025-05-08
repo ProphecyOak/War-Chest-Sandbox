@@ -7,6 +7,7 @@
 script = ExtResource("1_ctcp8")
 
 [node name="LobbyControls" type="CenterContainer" parent="."]
+visible = false
 custom_minimum_size = Vector2(1150, 650)
 offset_right = 650.0
 
@@ -29,14 +30,103 @@ layout_mode = 2
 layout_mode = 2
 text = "Create Room"
 
-[node name="CloseButton" type="Button" parent="LobbyControls/Buttons"]
+[node name="RoomControls" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="RoomControls"]
 layout_mode = 2
-text = "Close"
+
+[node name="MarginContainer" type="MarginContainer" parent="RoomControls/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RoomControls/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Host_Guest" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "You are the host of this room!
+"
+
+[node name="Room_ID" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Room ID: asdasdas"
+
+[node name="LeaveButton" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Leave Room"
+
+[node name="BoardSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSelect"]
+layout_mode = 2
+text = "Board:"
+
+[node name="OptionButton" type="OptionButton" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSelect"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+selected = 0
+item_count = 1
+popup/item_0/text = "Default"
+popup/item_0/id = 0
+
+[node name="LoadBoard" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSelect"]
+layout_mode = 2
+text = "Load"
+
+[node name="BoardSettings" type="VBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TeamSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
+layout_mode = 2
+text = "Role:"
+
+[node name="Role" type="OptionButton" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Spectator"
+popup/item_0/id = 0
+popup/item_1/text = "Wolves"
+popup/item_1/id = 1
+popup/item_2/text = "Ravens"
+popup/item_2/id = 2
 
 [node name="WebSocketClient" type="Node" parent="."]
 script = ExtResource("1_4ktdg")
 
+[node name="Status" type="HBoxContainer" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 112.0
+offset_bottom = 50.0
+
+[node name="Label" type="Label" parent="Status"]
+visible = false
+layout_mode = 2
+text = "Connected"
+
+[node name="Button" type="Button" parent="Status"]
+layout_mode = 2
+text = "Connect"
+
 [connection signal="text_changed" from="LobbyControls/Buttons/HBoxContainer/RoomCode" to="WebSocketClient" method="_on_room_code_text_changed"]
 [connection signal="pressed" from="LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
-[connection signal="pressed" from="LobbyControls/Buttons/CloseButton" to="WebSocketClient" method="on_close"]
+[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="WebSocketClient" method="on_leave"]
 [connection signal="data_received" from="WebSocketClient" to="." method="_on_web_socket_client_data_received"]
+[connection signal="pressed" from="Status/Button" to="WebSocketClient" method="connect_to_server"]

@@ -4,7 +4,19 @@ class_name WebSocketClient
 @export var client_name = "User"
 @export var websocket_url = "ws://localhost:9080"
 var client: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-var socket_status = WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED
+var socket_status = WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED:
+	set(new_status):
+		socket_status = new_status
+		match socket_status:
+			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
+				$"../Status/Button".visible = false
+				$"../Status/Label".visible = true
+				emit_signal("socket_connected")
+			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED:
+				$"../Status/Button".visible = true
+				$"../Status/Label".visible = false
+				emit_signal("socket_disconnected")
+				on_leave(false)
 var room_id = null
 var room_id_given: bool:
 	get:
@@ -14,15 +26,29 @@ signal socket_connected
 signal data_received
 signal socket_disconnected
 
-func on_join():
+func connect_to_server():
 	if socket_status != WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED: return
 	var err = client.create_client(websocket_url)
 	if err != OK:
 		print("Unable to connect to server.")
 		return
 
-func on_close():
-	client.close()
+func on_join():
+	if socket_status != WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED: return
+	var connectionMessage = {
+		"op": "join_room" if room_id_given else "create_room",
+		"room_id": room_id if room_id_given else "null"
+	}
+	send_JSON(connectionMessage)
+
+func on_leave(send: bool = true):
+	$"../LobbyControls".visible = true
+	$"../RoomControls".visible = false
+	if $"..".has_node("Game"):
+		$"..".remove_child($"../Game")
+	if send: send_JSON({
+		"op": "leave_room",
+	})
 
 func send_JSON(message):
 	client.get_peer(1).send_text(JSON.stringify(message))
@@ -32,16 +58,6 @@ func poll():
 	var state = client.get_connection_status()
 	if state != socket_status:
 		socket_status = state
-		match socket_status:
-			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
-				emit_signal("socket_connected")
-				var connectionMessage = {
-					"op": "join_room" if room_id_given else "create_room",
-					"room_id": room_id if room_id_given else "null"
-				}
-				send_JSON(connectionMessage)
-			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED:
-				emit_signal("socket_disconnected")
 	if socket_status == WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
 		while client.get_available_packet_count():
 			var packet = client.get_packet()
