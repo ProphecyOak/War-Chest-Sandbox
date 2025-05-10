@@ -1,10 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://jp3e6w54jglo"]
 
 [ext_resource type="Script" uid="uid://c58lg6sihij8u" path="res://Lobby/web_socket_client.gd" id="1_4ktdg"]
-[ext_resource type="Script" uid="uid://v065msj6v5h3" path="res://Lobby/lobby.gd" id="1_ctcp8"]
+[ext_resource type="Script" uid="uid://v065msj6v5h3" path="res://Lobby/main.gd" id="1_ctcp8"]
 [ext_resource type="Script" uid="uid://crhq62sawxrey" path="res://Lobby/board_settings.gd" id="2_6tm10"]
 
-[node name="Lobby" type="Node"]
+[node name="Main" type="Node"]
 script = ExtResource("1_ctcp8")
 
 [node name="LobbyControls" type="CenterContainer" parent="."]
@@ -132,5 +132,4 @@ text = "Connect"
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="WebSocketClient" method="on_leave"]
 [connection signal="board_selected" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]
-[connection signal="data_received" from="WebSocketClient" to="." method="_on_web_socket_client_data_received"]
 [connection signal="pressed" from="Status/Button" to="WebSocketClient" method="connect_to_server"]
