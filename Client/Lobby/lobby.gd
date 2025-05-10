@@ -7,13 +7,14 @@ var room_host:
 		room_host = new_value
 		var host_guest = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Host_Guest
 		host_guest.text = "You are the host of this room!\n" if room_host else "You are a guest of this room!\n"
+		$RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings.is_host = room_host
 
 func _ready():
 	$LobbyControls.visible = true
 	$RoomControls.visible = false
 
 func _on_web_socket_client_data_received(packet: PackedByteArray):
-	var data = bytes_to_var(packet)
+	var data = JSON.parse_string(packet.get_string_from_utf8())
 	match typeof(data):
 		TYPE_STRING:
 			print("Received String:\n%s" % data)
@@ -60,3 +61,7 @@ func on_game_started(data):
 	add_child(game)
 	game.set_owner(self)
 	game.web_socket = $WebSocketClient
+
+
+func on_board_selected(board_path):
+	pass # Replace with function body.

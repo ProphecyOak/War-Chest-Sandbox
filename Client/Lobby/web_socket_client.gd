@@ -3,16 +3,16 @@ class_name WebSocketClient
 
 @export var client_name = "User"
 @export var websocket_url = "ws://localhost:9080"
-var client: WebSocketMultiplayerPeer = WebSocketMultiplayerPeer.new()
-var socket_status = WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED:
+var client: WebSocketPeer = WebSocketPeer.new()
+var socket_status = WebSocketPeer.STATE_CLOSED:
 	set(new_status):
 		socket_status = new_status
 		match socket_status:
-			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
+			WebSocketPeer.STATE_OPEN:
 				$"../Status/Button".visible = false
 				$"../Status/Label".visible = true
 				emit_signal("socket_connected")
-			WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED:
+			WebSocketPeer.STATE_CLOSED:
 				$"../Status/Button".visible = true
 				$"../Status/Label".visible = false
 				emit_signal("socket_disconnected")
@@ -27,14 +27,14 @@ signal data_received
 signal socket_disconnected
 
 func connect_to_server():
-	if socket_status != WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_DISCONNECTED: return
-	var err = client.create_client(websocket_url)
+	if socket_status != WebSocketPeer.STATE_CLOSED: return
+	var err = client.connect_to_url(websocket_url)
 	if err != OK:
 		print("Unable to connect to server.")
 		return
 
 func on_join():
-	if socket_status != WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED: return
+	if socket_status != WebSocketPeer.STATE_OPEN: return
 	var connectionMessage = {
 		"op": "join_room" if room_id_given else "create_room",
 		"room_id": room_id if room_id_given else "null"
@@ -51,14 +51,14 @@ func on_leave(send: bool = true):
 	})
 
 func send_JSON(message):
-	client.get_peer(1).send_text(JSON.stringify(message))
+	client.send_text(JSON.stringify(message))
 
 func poll():
 	client.poll()
-	var state = client.get_connection_status()
+	var state = client.get_ready_state()
 	if state != socket_status:
 		socket_status = state
-	if socket_status == WebSocketMultiplayerPeer.ConnectionStatus.CONNECTION_CONNECTED:
+	if socket_status == WebSocketPeer.STATE_OPEN:
 		while client.get_available_packet_count():
 			var packet = client.get_packet()
 			emit_signal("data_received", packet)
