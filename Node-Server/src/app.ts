@@ -63,11 +63,16 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // Client is asking to join an existing room.
       // HAS room_id
       // RES null
-      if (!data.room_id)
+      if (any_missing(ws, data, ["room_id"])) return;
+      if (!Room.rooms.has(data.room_id)) {
         send_to_peer(ws, "error", {
           original_op: "join_room",
-          error_code: "missing_room_id",
+          error_code: "invalid_room_id",
         });
+        return;
+      }
+      Room.rooms.get(data.room_id as UUID)!.add_peer(peer_id);
+      send_to_peer(ws, "joined_room", { room_id: data.room_id });
       return;
 
     case "push_game_settings":
@@ -117,4 +122,18 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // RES null
       return;
   }
+}
+
+function any_missing(
+  ws: WebSocket,
+  data: { [key: string]: any },
+  keys: string[]
+) {
+  keys.forEach((key: string) => {
+    if (data[key] != undefined) return;
+    send_to_peer(ws, "error", {
+      missing_key: key,
+    });
+  });
+  return false;
 }
