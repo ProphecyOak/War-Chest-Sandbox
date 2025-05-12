@@ -17,10 +17,10 @@ var socket_status = WebSocketPeer.STATE_CLOSED:
 				$"../Status/Label".visible = true
 				emit_signal("socket_connected")
 			WebSocketPeer.STATE_CLOSED:
+				root.on_leave_room(false)
 				$"../Status/Button".visible = true
 				$"../Status/Label".visible = false
 				emit_signal("socket_disconnected")
-				root.on_leave(false)
 var room_id = null
 var room_id_given: bool:
 	get:
@@ -97,6 +97,8 @@ func resolve_operation(data: Dictionary):
 		"joined_room":
 			if missing_keys(data, ["room_id"]): return false
 			root.on_room_joined(data)
+		"make_host":
+			root.room_host = true
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()
@@ -106,7 +108,6 @@ func resolve_operation(data: Dictionary):
 			#$".".add_child(new_sprite)
 			#new_sprite.texture = new_tex
 		_:
-			print("Received unhandled message: %s" % data)
 			return false
 	return true
 

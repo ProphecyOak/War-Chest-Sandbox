@@ -42,7 +42,7 @@ class Room {
       case 1:
         if (this.players.has(this.host)) break;
         this.host = Array.from(this.players.entries())[0][0];
-        send_to_peer(this.sockets.get(peer_id)!, "make_host");
+        send_to_peer(this.sockets.get(this.host)!, "make_host");
         break;
       case 0:
         console.log(`Removing room: ${this.id}`);

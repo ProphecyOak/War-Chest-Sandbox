@@ -18,6 +18,7 @@ func on_room_joined(data):
 	$RoomControls.visible = true
 	var room_id = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Room_ID
 	room_id.text = "Room ID: %s" % data["room_id"]
+	room_host = false
 
 func on_leave_room(data, choice: bool = true):
 	$LobbyControls.visible = true

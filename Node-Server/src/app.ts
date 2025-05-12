@@ -88,50 +88,46 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       return;
 
     case "push_game_settings":
-      // Client is selecting and providing the board arrangement, and other settings for their room.
-      // HAS board
-      // HAS draft_type
-      // HAS unit_list
-      // BROADCAST pull_game_settings
-      return;
+    // Client is selecting and providing the board arrangement, and other settings for their room.
+    // HAS board
+    // HAS draft_type
+    // HAS unit_list
+    // BROADCAST pull_game_settings
 
     case "pull_game_settings":
-      // Client is asking for pre-game settings.
-      // HAS null
-      // RES game_settings
-      return;
+    // Client is asking for pre-game settings.
+    // HAS null
+    // RES game_settings
 
     case "pull_game_state":
-      // Client is asking for current game state.
-      // HAS null
-      // RES game_state
-      return;
+    // Client is asking for current game state.
+    // HAS null
+    // RES game_state
 
     case "push_move":
-      // Client is submitting a move
-      // HAS move (Datatype undecided so far)
-      // BROADCAST pull_game
-      return;
+    // Client is submitting a move
+    // HAS move (Datatype undecided so far)
+    // BROADCAST pull_game
 
     case "push_unit_choice":
-      // Client is choosing a unit.
-      // HAS unit_id
-      // BROADCAST unit_choices OR
-      // BROADCAST game_start
-      return;
+    // Client is choosing a unit.
+    // HAS unit_id
+    // BROADCAST unit_choices OR
+    // BROADCAST game_start
 
     case "push_game_choice":
-      // Client is choosing the outcome of an undo-request or a coin effect (i.e. Royal Guard).
-      // HAS decision_id
-      // HAS decision
-      // BROADCAST pull_game
-      return;
+    // Client is choosing the outcome of an undo-request or a coin effect (i.e. Royal Guard).
+    // HAS decision_id
+    // HAS decision
+    // BROADCAST pull_game
 
     case "push_image":
-      // Client is providing an image it's been asked for.
-      // HAS image_string
-      // HAS image_id
-      // RES null
+    // Client is providing an image it's been asked for.
+    // HAS image_string
+    // HAS image_id
+    // RES null
+    default:
+      console.log(`Unhandled message op: ${data.op} from:\n\t${peer_id}`);
       return;
   }
 }
