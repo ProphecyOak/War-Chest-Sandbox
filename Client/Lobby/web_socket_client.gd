@@ -20,7 +20,7 @@ var socket_status = WebSocketPeer.STATE_CLOSED:
 				$"../Status/Button".visible = true
 				$"../Status/Label".visible = false
 				emit_signal("socket_disconnected")
-				on_leave(false)
+				root.on_leave(false)
 var room_id = null
 var room_id_given: bool:
 	get:
@@ -48,15 +48,6 @@ func on_join():
 	}
 	send_JSON(connectionMessage)
 
-func on_leave(send: bool = true):
-	$"../LobbyControls".visible = true
-	$"../RoomControls".visible = false
-	if root.has_node("Game"):
-		root.remove_child($"../Game")
-	if send: send_JSON({
-		"op": "leave_room",
-	})
-
 func send_JSON(message):
 	client.send_text(JSON.stringify(message))
 
@@ -78,37 +69,55 @@ func _process(_delta):
 
 func _on_room_code_text_changed(new_text):
 	room_id = new_text
-	$"../rootControls/Buttons/JoinButton".text = "Join Room" if room_id_given else "Create Room"
+	$"../LobbyControls/Buttons/JoinButton".text = "Join Room" if room_id_given else "Create Room"
 
 func handle_incoming_data(data: Dictionary):
-	if "error" in data.keys() and data["error"]:
-		invalid_response(data, "error_code")
+	if missing_keys(data, ["op"]):
+		invalid_response(data, "op")
+		return
+	if data["op"] == "error":
 		print("Received an error with code: %s\nOriginal Request:\n%s" % [data["error_code"], data["request"]])
 		return
-	if missing_keys(data, ["op"]): return
-	resolve_operation(data)
+	if !resolve_operation(data):
+		print("Flawed or unhandled message: %s" % data)
 
 func resolve_operation(data: Dictionary):
 	match data["op"]:
 		"assign_uuid":
-			if missing_keys(data, ["uuid"]): return
+			if missing_keys(data, ["uuid"]): return false
 			print("Client assigned UUID: %s" % data["uuid"])
 			UUID = data["uuid"]
+		"player_joined":
+			if missing_keys(data, ["name"]): return false
+			print("Player `%s` joined your room." % data["name"])
+		"room_created":
+			if missing_keys(data, ["room_id"]): return false
+			root.on_room_joined(data)
+			root.room_host = true
+		"joined_room":
+			if missing_keys(data, ["room_id"]): return false
+			root.on_room_joined(data)
 		#"image":
-			#if missing_keys(data, ["image"]): return
+			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()
 			#img.load_png_from_buffer(Marshalls.base64_to_raw(data["image"]))
 			#var new_tex = ImageTexture.create_from_image(img)
 			#var new_sprite = Sprite2D.new()
 			#$".".add_child(new_sprite)
 			#new_sprite.texture = new_tex
+		_:
+			print("Received unhandled message: %s" % data)
+			return false
+	return true
 
 func missing_keys(data: Dictionary, keys: Array[String]):
+	var keys_found_missing = []
 	for key in keys:
 		if !data.has(key):
-			invalid_response(data, key)
-			return true
+			keys_found_missing.append(key)
+	if len(keys_found_missing) > 0:
+		invalid_response(data, keys_found_missing)
 	return false
 	
 func invalid_response(data, missing_key):
-	print("Received an invalid request: %s missing the key: %s" % [data, missing_key])
+	print("Received an invalid message: %s missing the key(s): %s" % [data, missing_key])

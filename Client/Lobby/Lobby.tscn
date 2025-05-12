@@ -129,7 +129,7 @@ text = "Connect"
 
 [connection signal="text_changed" from="LobbyControls/Buttons/HBoxContainer/RoomCode" to="WebSocketClient" method="_on_room_code_text_changed"]
 [connection signal="pressed" from="LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
-[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="WebSocketClient" method="on_leave"]
+[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="on_leave_room" binds= [true]]
 [connection signal="board_selected" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]
 [connection signal="pressed" from="Status/Button" to="WebSocketClient" method="connect_to_server"]

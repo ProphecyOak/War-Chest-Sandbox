@@ -20,13 +20,21 @@ let peerRooms: Map<UUID, Room> = new Map<UUID, Room>();
 
 wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
   console.log(`Client connected.`);
-  var peer_id = req.headers.uuid;
-  if (peer_id == "null") peer_id = assign_UUID(ws);
-  peers.set(peer_id as UUID, ws);
+  var supplied_id = req.headers.uuid;
+  var peer_id: UUID;
+  if (supplied_id == "null") peer_id = assign_UUID(ws);
+  else peer_id = supplied_id as UUID;
+  peers.set(peer_id, ws);
 
   ws.on("message", (packet: RawData) => {
     const data = JSON.parse(packet.toString());
-    resolve_incoming_message(peer_id as UUID, data as WSData);
+    resolve_incoming_message(peer_id, data as WSData);
+  });
+
+  ws.on("close", () => {
+    if (peerRooms.has(peer_id)) leave_room(peer_id);
+    peers.delete(peer_id);
+    console.log(`Client ${peer_id} has disconnected.`);
   });
 });
 
@@ -63,13 +71,20 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       if (any_missing(ws, data, ["room_id"])) return;
       if (!Room.rooms.has(data.room_id)) {
         send_to_peer(ws, "error", {
-          original_op: "join_room",
           error_code: "invalid_room_id",
+          request: data,
         });
         return;
       }
-      Room.rooms.get(data.room_id as UUID)!.add_peer(peer_id, ws);
+      const room_to_join = Room.rooms.get(data.room_id)!;
+      room_to_join.add_peer(peer_id, ws);
+      peerRooms.set(peer_id, room_to_join);
       send_to_peer(ws, "joined_room", { room_id: data.room_id });
+      return;
+
+    case "leave_room":
+      // Client is asking to leave the room they are in.
+      leave_room(peer_id);
       return;
 
     case "push_game_settings":
@@ -121,16 +136,24 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
   }
 }
 
+function leave_room(peer_id: UUID) {
+  peerRooms.get(peer_id)!.remove_peer(peer_id);
+  peerRooms.delete(peer_id);
+  console.log(`Client ${peer_id} has left their room.`);
+}
+
 function any_missing(
   ws: WebSocket,
   data: { [key: string]: any },
   keys: string[]
 ) {
+  const missing_keys: string[] = [];
   keys.forEach((key: string) => {
-    if (data[key] != undefined) return;
-    send_to_peer(ws, "error", {
-      missing_key: key,
-    });
+    if (data[key] == undefined) missing_keys.push(key);
   });
+  if (missing_keys.length > 0)
+    send_to_peer(ws, "error", {
+      missing_keys: missing_keys,
+    });
   return false;
 }

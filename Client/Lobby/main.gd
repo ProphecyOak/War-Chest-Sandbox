@@ -2,7 +2,7 @@ extends Node
 
 @onready var game_scene: PackedScene = preload("res://MVC Game/game.tscn")
 var game: GameManager = null
-var room_host:
+var room_host = false:
 	set(new_value):
 		room_host = new_value
 		var host_guest = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Host_Guest
@@ -18,6 +18,15 @@ func on_room_joined(data):
 	$RoomControls.visible = true
 	var room_id = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Room_ID
 	room_id.text = "Room ID: %s" % data["room_id"]
+
+func on_leave_room(data, choice: bool = true):
+	$LobbyControls.visible = true
+	$RoomControls.visible = false
+	room_host = false
+	if has_node("Game"): remove_child($"../Game")
+	if choice: $WebSocketClient.send_JSON({
+		"op": "leave_room",
+	})
 
 func on_game_started(data):
 	game = game_scene.instantiate()

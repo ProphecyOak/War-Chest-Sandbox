@@ -5,30 +5,40 @@ import { send_to_peer } from "./server_tools";
 export { Room };
 
 class Room {
-  static rooms: Map<UUID, Room> = new Map<UUID, Room>();
-  players: Player[] = [];
-  sockets: WebSocket[] = [];
+  static rooms = new Map<UUID, Room>();
+
+  players = new Map<UUID, Player>();
+  sockets = new Map<UUID, WebSocket>();
   host: UUID;
   id: UUID;
-  game: Game;
+  game?: Game;
 
   constructor(creator: UUID, ws: WebSocket) {
     this.host = creator;
     this.id = randomUUID();
     this.add_peer(creator, ws);
     Room.rooms.set(this.id, this);
-    this.game = new Game(this.players, {} as Board);
-    console.log(this.game);
+    console.log(`Room: ${this.id} created.`);
   }
 
   add_peer(peer_id: UUID, ws: WebSocket) {
-    this.players.push(new Player(peer_id));
-    this.sockets.push(ws);
-    this.broadcast("player_joined");
+    this.players.set(peer_id, new Player(peer_id));
+    this.sockets.set(peer_id, ws);
+    this.broadcast("player_joined", { name: peer_id }, ws);
   }
 
-  broadcast(op_code: string, extras?: {}) {
+  remove_peer(peer_id: UUID) {
+    this.players.delete(peer_id);
+    this.sockets.delete(peer_id);
+    if (this.players.size == 0) {
+      console.log(`Removing room: ${this.id}`);
+      Room.rooms.delete(this.id);
+    }
+  }
+
+  broadcast(op_code: string, extras?: {}, origin_ws?: WebSocket) {
     this.sockets.forEach((ws: WebSocket) => {
+      if (ws == origin_ws) return;
       send_to_peer(ws, op_code, extras);
     });
   }
