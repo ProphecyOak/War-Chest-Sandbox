@@ -56,9 +56,18 @@ layout_mode = 2
 text = "You are the host of this room!
 "
 
-[node name="Room_ID" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="Room_ID" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Room ID: asdasdas"
+
+[node name="CopyRoomID" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "Copy"
 
 [node name="LeaveButton" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -129,6 +138,7 @@ text = "Connect"
 
 [connection signal="text_changed" from="LobbyControls/Buttons/HBoxContainer/RoomCode" to="WebSocketClient" method="_on_room_code_text_changed"]
 [connection signal="pressed" from="LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
+[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyRoomID" to="." method="room_id_to_clipboard"]
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="on_leave_room" binds= [true]]
 [connection signal="board_selected" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]

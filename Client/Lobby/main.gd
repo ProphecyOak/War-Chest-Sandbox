@@ -9,6 +9,15 @@ var room_host = false:
 		host_guest.text = "You are the host of this room!\n" if room_host else "You are a guest of this room!\n"
 		$RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings.is_host = room_host
 
+var room_id:
+	set(new_id):
+		room_id = new_id
+		var room_id_label = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Room_ID
+		room_id_label.text = "Room ID: %s" % room_id
+	
+func room_id_to_clipboard():
+	DisplayServer.clipboard_set(room_id)
+
 func _ready():
 	$LobbyControls.visible = true
 	$RoomControls.visible = false
@@ -16,8 +25,7 @@ func _ready():
 func on_room_joined(data):
 	$LobbyControls.visible = false
 	$RoomControls.visible = true
-	var room_id = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Room_ID
-	room_id.text = "Room ID: %s" % data["room_id"]
+	room_id = data["room_id"]
 	room_host = false
 
 func on_leave_room(data, choice: bool = true):
