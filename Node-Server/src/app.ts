@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import { IncomingMessage } from "http";
 import { randomUUID, UUID } from "crypto";
 import { Room } from "./room";
+import { send_to_peer } from "./server_tools";
 
 config();
 
@@ -41,10 +42,6 @@ interface WSData {
   [key: string]: any;
 }
 
-function send_to_peer(ws: WebSocket, op_code: string, extras?: {}) {
-  ws.send(JSON.stringify({ op: op_code, ...extras }));
-}
-
 function resolve_incoming_message(peer_id: UUID, data: WSData) {
   const ws = peers.get(peer_id)!;
   switch (data.op) {
@@ -52,7 +49,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // Client is asking to create a new room and join it.
       // HAS null
       // RES room_id
-      const new_room = new Room(peer_id);
+      const new_room = new Room(peer_id, ws);
       peerRooms.set(peer_id, new_room);
       send_to_peer(ws, "room_created", {
         room_id: new_room.id,
@@ -71,7 +68,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
         });
         return;
       }
-      Room.rooms.get(data.room_id as UUID)!.add_peer(peer_id);
+      Room.rooms.get(data.room_id as UUID)!.add_peer(peer_id, ws);
       send_to_peer(ws, "joined_room", { room_id: data.room_id });
       return;
 
