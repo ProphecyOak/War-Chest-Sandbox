@@ -8,6 +8,7 @@ var room_host = false:
 		var host_guest = $RoomControls/PanelContainer/MarginContainer/VBoxContainer/Host_Guest
 		host_guest.text = "You are the host of this room!\n" if room_host else "You are a guest of this room!\n"
 		$RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings.is_host = room_host
+		$RoomControls/PanelContainer/MarginContainer/VBoxContainer/StartGame.disabled = !room_host
 
 var room_id:
 	set(new_id):
@@ -33,9 +34,7 @@ func on_leave_room(data, choice: bool = true):
 	$RoomControls.visible = false
 	room_host = false
 	if has_node("Game"): remove_child($"../Game")
-	if choice: $WebSocketClient.send_JSON({
-		"op": "leave_room",
-	})
+	if choice: $WebSocketClient.send_request("leave_room")
 
 func on_game_started(data):
 	game = game_scene.instantiate()
@@ -44,5 +43,11 @@ func on_game_started(data):
 	game.web_socket = $WebSocketClient
 
 
-func on_board_selected(board_path):
-	pass # Replace with function body.
+func on_board_selected(board):
+	$WebSocketClient.send_request("push_game_settings", {
+		"board": board.get_JSON()
+	})
+
+
+func on_start_game():
+	$WebSocketClient.send_request("start_game")

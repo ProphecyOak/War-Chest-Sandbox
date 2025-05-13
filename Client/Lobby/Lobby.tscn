@@ -67,7 +67,7 @@ text = "Room ID: asdasdas"
 [node name="CopyRoomID" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
-text = "Copy"
+text = "Copy ID"
 
 [node name="LeaveButton" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -79,20 +79,18 @@ script = ExtResource("2_6tm10")
 
 [node name="BoardSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings"]
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
+custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "Board:"
 
 [node name="OptionButton" type="OptionButton" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-selected = 0
-item_count = 1
-popup/item_0/text = "Default"
-popup/item_0/id = 0
 
 [node name="LoadBoard" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
 layout_mode = 2
@@ -100,10 +98,12 @@ text = "Load"
 
 [node name="TeamSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings"]
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
+custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "Role:"
 
@@ -117,6 +117,10 @@ popup/item_1/text = "Wolves"
 popup/item_1/id = 1
 popup/item_2/text = "Ravens"
 popup/item_2/id = 2
+
+[node name="StartGame" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Start"
 
 [node name="WebSocketClient" type="Node" parent="."]
 script = ExtResource("1_4ktdg")
@@ -142,4 +146,5 @@ text = "Connect"
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="on_leave_room" binds= [true]]
 [connection signal="board_selected" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
 [connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]
+[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/StartGame" to="." method="on_start_game"]
 [connection signal="pressed" from="Status/Button" to="WebSocketClient" method="connect_to_server"]

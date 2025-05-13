@@ -3,7 +3,7 @@ import { config } from "dotenv";
 import { IncomingMessage } from "http";
 import { randomUUID, UUID } from "crypto";
 import { Room } from "./room";
-import { send_to_peer } from "./server_tools";
+import { error_to_peer, send_to_peer } from "./server_tools";
 
 config();
 
@@ -70,10 +70,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // RES null
       if (any_missing(ws, data, ["room_id"])) return;
       if (!Room.rooms.has(data.room_id)) {
-        send_to_peer(ws, "error", {
-          error_code: "invalid_room_id",
-          request: data,
-        });
+        error_to_peer(ws, "invalid_room_id", data);
         return;
       }
       const room_to_join = Room.rooms.get(data.room_id)!;
@@ -88,16 +85,30 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       return;
 
     case "push_game_settings":
-    // Client is selecting and providing the board arrangement, and other settings for their room.
-    // HAS board
-    // HAS draft_type
-    // HAS unit_list
-    // BROADCAST pull_game_settings
+      // Client is selecting and providing the board arrangement, and other settings for their room.
+      // HAS board
+      // HAS draft_type
+      // HAS unit_list
+      // BROADCAST pull_game_settings
+      if (any_missing(ws, data, ["board"])) return false;
+      console.log(data);
+      const room = peerRooms.get(peer_id)!;
+      if (!room.game.set_board(data.board))
+        error_to_peer(ws, "invalid_board_submitted", data);
+      else room.broadcast("game_settings_updated");
+      return;
 
     case "pull_game_settings":
-    // Client is asking for pre-game settings.
-    // HAS null
-    // RES game_settings
+      // Client is asking for pre-game settings.
+      // HAS null
+      // RES game_settings
+      send_to_peer(ws, "supply_game_settings", {
+        game_state: peerRooms.get(peer_id)!.game,
+      });
+      return;
+
+    case "start_game":
+    // Client is asking to start the game.
 
     case "pull_game_state":
     // Client is asking for current game state.
@@ -148,7 +159,7 @@ function any_missing(
     if (data[key] == undefined) missing_keys.push(key);
   });
   if (missing_keys.length > 0)
-    send_to_peer(ws, "error", {
+    error_to_peer(ws, "message_missing_data", data, {
       missing_keys: missing_keys,
     });
   return false;

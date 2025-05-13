@@ -42,14 +42,12 @@ func connect_to_server():
 
 func on_join():
 	if socket_status != WebSocketPeer.STATE_OPEN: return
-	var connectionMessage = {
-		"op": "join_room" if room_id_given else "create_room",
-		"room_id": room_id if room_id_given else "null"
-	}
-	send_JSON(connectionMessage)
-
-func send_JSON(message):
-	client.send_text(JSON.stringify(message))
+	if room_id_given: send_request("join_room", {"room_id": room_id})
+	else: send_request("create_room", {"room_id": "null"})
+	
+func send_request(op_code: String, extras: Dictionary = {}):
+	extras["op"] = op_code
+	client.send_text(JSON.stringify(extras))
 
 func poll():
 	client.poll()
@@ -76,7 +74,7 @@ func handle_incoming_data(data: Dictionary):
 		invalid_response(data, "op")
 		return
 	if data["op"] == "error":
-		print("Received an error with code: %s\nOriginal Request:\n%s" % [data["error_code"], data["request"]])
+		print("Received an error with code: %s\nOriginal Request:\n%s" % [data["reason"], data["request"]])
 		return
 	if !resolve_operation(data):
 		print("Flawed or unhandled message: %s" % data)
@@ -99,6 +97,8 @@ func resolve_operation(data: Dictionary):
 			root.on_room_joined(data)
 		"make_host":
 			root.room_host = true
+		"game_settings_updated":
+			send_request("pull_game_settings")
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()
