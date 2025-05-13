@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://jp3e6w54jglo"]
+[gd_scene load_steps=5 format=3 uid="uid://jp3e6w54jglo"]
 
 [ext_resource type="Script" uid="uid://c58lg6sihij8u" path="res://Lobby/web_socket_client.gd" id="1_4ktdg"]
 [ext_resource type="Script" uid="uid://v065msj6v5h3" path="res://Lobby/main.gd" id="1_ctcp8"]
 [ext_resource type="Script" uid="uid://crhq62sawxrey" path="res://Lobby/board_settings.gd" id="2_6tm10"]
+[ext_resource type="PackedScene" uid="uid://61nru7ev6jbi" path="res://MVC Game/Board/board.tscn" id="3_iiluk"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_ctcp8")
@@ -121,6 +122,10 @@ popup/item_2/id = 2
 [node name="StartGame" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Start"
+
+[node name="Board" parent="RoomControls" instance=ExtResource("3_iiluk")]
+position = Vector2(995, 334)
+scale = Vector2(0.5, 0.5)
 
 [node name="WebSocketClient" type="Node" parent="."]
 script = ExtResource("1_4ktdg")

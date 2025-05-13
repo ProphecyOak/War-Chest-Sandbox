@@ -124,7 +124,6 @@ class Board {
   poison: { [unit_id: string]: hex_coord }[] = [];
 
   constructor(boardData: BoardData) {
-    console.log(boardData);
     this.player_count = boardData.player_count;
     this.winning_score = boardData.winning_score;
     this.traversable_hexes = boardData.traversable_hexes;

@@ -21,8 +21,8 @@ func format_control_spots():
 	for i in range(player_count+1): out.append([])
 	for hex in control_spots:
 		if starting_spots.has(hex):
-			out[starting_spots[hex]].append(hex)
-		else: out[-1].append(hex)
+			out[starting_spots[hex]].append([hex.x, hex.y])
+		else: out[-1].append([hex.x, hex.y])
 	return out
 
 func vec_to_arr(hex):

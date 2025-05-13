@@ -77,6 +77,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       room_to_join.add_peer(peer_id, ws);
       peerRooms.set(peer_id, room_to_join);
       send_to_peer(ws, "joined_room", { room_id: data.room_id });
+      // SEND BOARD_SETTING STUFF TOO
       return;
 
     case "leave_room":
@@ -91,7 +92,6 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // HAS unit_list
       // BROADCAST pull_game_settings
       if (any_missing(ws, data, ["board"])) return false;
-      console.log(data);
       const room = peerRooms.get(peer_id)!;
       if (!room.game.set_board(data.board))
         error_to_peer(ws, "invalid_board_submitted", data);
