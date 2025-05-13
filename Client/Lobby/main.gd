@@ -24,11 +24,12 @@ func _ready():
 	$RoomControls.visible = false
 
 func on_room_joined(data):
+	$WebSocketClient.send_request("pull_game_settings")
+	$RoomControls/Board.visible = false
 	$LobbyControls.visible = false
 	$RoomControls.visible = true
 	room_id = data["room_id"]
 	room_host = false
-	# CHECK FOR BOARD_SETTING STUFF TOO!
 
 func on_leave_room(data, choice: bool = true):
 	$LobbyControls.visible = true

@@ -77,7 +77,6 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       room_to_join.add_peer(peer_id, ws);
       peerRooms.set(peer_id, room_to_join);
       send_to_peer(ws, "joined_room", { room_id: data.room_id });
-      // SEND BOARD_SETTING STUFF TOO
       return;
 
     case "leave_room":

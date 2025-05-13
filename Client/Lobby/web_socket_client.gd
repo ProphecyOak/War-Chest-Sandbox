@@ -101,7 +101,9 @@ func resolve_operation(data: Dictionary):
 			send_request("pull_game_settings")
 		"supply_game_settings":
 			if missing_keys(data, ["game_state"]): return false
-			$"../RoomControls/Board".initialize_board(data["game_state"]["board"])
+			if "board" in data["game_state"].keys():
+				$"../RoomControls/Board".visible = true
+				$"../RoomControls/Board".initialize_board(data["game_state"]["board"])
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()
