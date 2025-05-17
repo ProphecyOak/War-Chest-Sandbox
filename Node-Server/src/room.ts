@@ -73,6 +73,10 @@ class Game {
   teams: { id: number; controlled: hex_coord[]; color: string }[] = [];
   decrees: string[] = [];
 
+  get has_board() {
+    return this.board != undefined;
+  }
+
   constructor() {
     this.active_player = this.turn_order[0];
   }

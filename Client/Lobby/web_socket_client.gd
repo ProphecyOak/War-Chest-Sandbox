@@ -80,6 +80,9 @@ func handle_incoming_data(data: Dictionary):
 		print("Flawed or unhandled message: %s" % data)
 
 func resolve_operation(data: Dictionary):
+	var game
+	if root.has_node("Game"): game = $"../Game"
+	else: game = null
 	match data["op"]:
 		"assign_uuid":
 			if missing_keys(data, ["uuid"]): return false
@@ -102,8 +105,16 @@ func resolve_operation(data: Dictionary):
 		"supply_game_settings":
 			if missing_keys(data, ["game_state"]): return false
 			if "board" in data["game_state"].keys():
-				$"../RoomControls/Board".visible = true
-				$"../RoomControls/Board".initialize_board(data["game_state"]["board"])
+				$"..".board_preview.visible = true
+				$"..".board_preview.get_node("./MarginContainer/VBoxContainer/BoardPreview").initialize_board(data["game_state"]["board"])
+		"game_started":
+			if missing_keys(data, ["game_state"]): return false
+			root.on_game_started()
+			$"../Game".render(data["game_state"])
+		"game_state":
+			if missing_keys(data, ["game_state"]): return false
+			if game == null: return false;
+			game.render(data["game_state"])
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()

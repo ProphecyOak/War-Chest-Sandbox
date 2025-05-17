@@ -5,110 +5,126 @@
 [ext_resource type="Script" uid="uid://crhq62sawxrey" path="res://Lobby/board_settings.gd" id="2_6tm10"]
 [ext_resource type="PackedScene" uid="uid://61nru7ev6jbi" path="res://MVC Game/Board/board.tscn" id="3_iiluk"]
 
-[node name="Main" type="Node"]
+[node name="Main" type="Node" node_paths=PackedStringArray("host_indicator", "room_id_label", "board_preview", "start_game_button", "board_settings_manager")]
 script = ExtResource("1_ctcp8")
+host_indicator = NodePath("Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/Host_Guest")
+room_id_label = NodePath("Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/HBoxContainer/Room_ID")
+board_preview = NodePath("Outside-Of-Game/RoomControls/HBoxContainer/BoardPreviewBox")
+start_game_button = NodePath("Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/StartGame")
+board_settings_manager = NodePath("Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings")
 
-[node name="LobbyControls" type="CenterContainer" parent="."]
+[node name="WebSocketClient" type="Node" parent="."]
+script = ExtResource("1_4ktdg")
+
+[node name="Outside-Of-Game" type="Node" parent="."]
+
+[node name="LobbyControls" type="CenterContainer" parent="Outside-Of-Game"]
 visible = false
 custom_minimum_size = Vector2(1150, 650)
-offset_right = 650.0
+offset_right = 1150.0
+offset_bottom = 650.0
 
-[node name="Buttons" type="VBoxContainer" parent="LobbyControls"]
+[node name="Buttons" type="VBoxContainer" parent="Outside-Of-Game/LobbyControls"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="LobbyControls/Buttons"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Outside-Of-Game/LobbyControls/Buttons"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Label" type="Label" parent="LobbyControls/Buttons/HBoxContainer"]
+[node name="Label" type="Label" parent="Outside-Of-Game/LobbyControls/Buttons/HBoxContainer"]
 layout_mode = 2
 text = "Room ID:"
 
-[node name="RoomCode" type="LineEdit" parent="LobbyControls/Buttons/HBoxContainer"]
+[node name="RoomCode" type="LineEdit" parent="Outside-Of-Game/LobbyControls/Buttons/HBoxContainer"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 
-[node name="JoinButton" type="Button" parent="LobbyControls/Buttons"]
+[node name="JoinButton" type="Button" parent="Outside-Of-Game/LobbyControls/Buttons"]
 layout_mode = 2
 text = "Create Room"
 
-[node name="RoomControls" type="CenterContainer" parent="."]
+[node name="RoomControls" type="CenterContainer" parent="Outside-Of-Game"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="RoomControls"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Outside-Of-Game/RoomControls"]
 layout_mode = 2
+theme_override_constants/separation = 30
 
-[node name="MarginContainer" type="MarginContainer" parent="RoomControls/PanelContainer"]
+[node name="Settings" type="PanelContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="RoomControls/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer"]
 layout_mode = 2
 
-[node name="Host_Guest" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Host_Guest" type="Label" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "You are the host of this room!
 "
 
-[node name="HBoxContainer" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Room_ID" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Room_ID" type="Label" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Room ID: asdasdas"
 
-[node name="CopyRoomID" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="CopyRoomID" type="Button" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(30, 0)
 layout_mode = 2
 text = "Copy ID"
 
-[node name="LeaveButton" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="LeaveButton" type="Button" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Leave Room"
 
-[node name="BoardSettings" type="VBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="BoardSettings" type="VBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 script = ExtResource("2_6tm10")
 
-[node name="BoardSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings"]
+[node name="BoardSelect" type="HBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings"]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
+[node name="Label" type="Label" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
 custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "Board:"
 
-[node name="OptionButton" type="OptionButton" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
+[node name="OptionButton" type="OptionButton" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="LoadBoard" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
+[node name="LoadBoard" type="Button" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/BoardSelect"]
 layout_mode = 2
 text = "Load"
 
-[node name="TeamSelect" type="HBoxContainer" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings"]
+[node name="TeamSelect" type="HBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings"]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Label" type="Label" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
+[node name="Label" type="Label" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
 custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "Role:"
 
-[node name="Role" type="OptionButton" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
+[node name="Role" type="OptionButton" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/TeamSelect"]
 layout_mode = 2
 selected = 0
 item_count = 3
@@ -119,16 +135,30 @@ popup/item_1/id = 1
 popup/item_2/text = "Ravens"
 popup/item_2/id = 2
 
-[node name="StartGame" type="Button" parent="RoomControls/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="StartGame" type="Button" parent="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Start"
 
-[node name="Board" parent="RoomControls" instance=ExtResource("3_iiluk")]
-position = Vector2(995, 334)
-scale = Vector2(0.5, 0.5)
+[node name="BoardPreviewBox" type="PanelContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer"]
+layout_mode = 2
 
-[node name="WebSocketClient" type="Node" parent="."]
-script = ExtResource("1_4ktdg")
+[node name="MarginContainer" type="MarginContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/BoardPreviewBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Outside-Of-Game/RoomControls/HBoxContainer/BoardPreviewBox/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Outside-Of-Game/RoomControls/HBoxContainer/BoardPreviewBox/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Board Preview:"
+
+[node name="BoardPreview" parent="Outside-Of-Game/RoomControls/HBoxContainer/BoardPreviewBox/MarginContainer/VBoxContainer" instance=ExtResource("3_iiluk")]
+layout_mode = 2
+hex_scale = 1.0
 
 [node name="Status" type="HBoxContainer" parent="."]
 offset_left = 10.0
@@ -145,11 +175,11 @@ text = "Connected"
 layout_mode = 2
 text = "Connect"
 
-[connection signal="text_changed" from="LobbyControls/Buttons/HBoxContainer/RoomCode" to="WebSocketClient" method="_on_room_code_text_changed"]
-[connection signal="pressed" from="LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
-[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/CopyRoomID" to="." method="room_id_to_clipboard"]
-[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/LeaveButton" to="." method="on_leave_room" binds= [true]]
-[connection signal="board_selected" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
-[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="RoomControls/PanelContainer/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]
-[connection signal="pressed" from="RoomControls/PanelContainer/MarginContainer/VBoxContainer/StartGame" to="." method="on_start_game"]
+[connection signal="text_changed" from="Outside-Of-Game/LobbyControls/Buttons/HBoxContainer/RoomCode" to="WebSocketClient" method="_on_room_code_text_changed"]
+[connection signal="pressed" from="Outside-Of-Game/LobbyControls/Buttons/JoinButton" to="WebSocketClient" method="on_join"]
+[connection signal="pressed" from="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/HBoxContainer/CopyRoomID" to="." method="room_id_to_clipboard"]
+[connection signal="pressed" from="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/LeaveButton" to="." method="on_leave_room" binds= [true]]
+[connection signal="board_selected" from="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings" to="." method="on_board_selected"]
+[connection signal="pressed" from="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings/BoardSelect/LoadBoard" to="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/BoardSettings" method="on_board_selected"]
+[connection signal="pressed" from="Outside-Of-Game/RoomControls/HBoxContainer/Settings/MarginContainer/VBoxContainer/StartGame" to="." method="on_start_game"]
 [connection signal="pressed" from="Status/Button" to="WebSocketClient" method="connect_to_server"]

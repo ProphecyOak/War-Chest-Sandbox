@@ -52,6 +52,7 @@ interface WSData {
 
 function resolve_incoming_message(peer_id: UUID, data: WSData) {
   const ws = peers.get(peer_id)!;
+  const room: Room | undefined = peerRooms.get(peer_id);
   switch (data.op) {
     case "create_room":
       // Client is asking to create a new room and join it.
@@ -89,9 +90,9 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // HAS board
       // HAS draft_type
       // HAS unit_list
-      // BROADCAST pull_game_settings
+      // BROADCAST game_settings_updated
       if (any_missing(ws, data, ["board"])) return false;
-      const room = peerRooms.get(peer_id)!;
+      if (room == undefined) return false;
       if (!room.game.set_board(data.board))
         error_to_peer(ws, "invalid_board_submitted", data);
       else room.broadcast("game_settings_updated");
@@ -101,13 +102,19 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // Client is asking for pre-game settings.
       // HAS null
       // RES game_settings
+      if (room == undefined) return false;
       send_to_peer(ws, "supply_game_settings", {
-        game_state: peerRooms.get(peer_id)!.game,
+        game_state: room.game,
       });
       return;
 
     case "start_game":
-    // Client is asking to start the game.
+      // Client is asking to start the game.
+      if (room == undefined) return false;
+      if (!room.game.has_board) return false;
+      room.broadcast("game_started", {
+        game_state: room.game,
+      });
 
     case "pull_game_state":
     // Client is asking for current game state.

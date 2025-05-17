@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 class_name GameManager
 
 var web_socket: WebSocketClient = null
@@ -46,8 +46,8 @@ func load_game():
 func _ready():
 	load_game()
 
-func render(data):
-	print(data)
+func render(game_data):
+	$Board.update_board(game_data["board"])
 
 # Sets the hand to contain buttons for each coin in coins
 func update_hand(coins: Array[String]):

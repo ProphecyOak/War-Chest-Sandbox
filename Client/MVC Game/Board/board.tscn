@@ -2,7 +2,12 @@
 
 [ext_resource type="Script" uid="uid://bso2bgwnt0cxf" path="res://MVC Game/Board/board.gd" id="1_6r221"]
 
-[node name="Board" type="Node2D"]
+[node name="Board" type="Container"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_6r221")
 
 [node name="HexHolder" type="Node2D" parent="."]
