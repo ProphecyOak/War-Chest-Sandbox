@@ -1,7 +1,6 @@
 import { randomUUID, UUID } from "crypto";
 import { WebSocket } from "ws";
 import { send_to_peer } from "./server_tools";
-import { hostname } from "os";
 
 export { Room };
 
@@ -13,6 +12,7 @@ class Room {
   _host: UUID;
   id: UUID;
   game: Game;
+  action_stack = [];
 
   set host(new_host: UUID) {
     this._host = new_host;

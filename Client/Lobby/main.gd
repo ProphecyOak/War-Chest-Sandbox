@@ -51,7 +51,7 @@ func on_leave_room(data, choice: bool = true):
 	$"Outside-Of-Game/LobbyControls".visible = true
 	$"Outside-Of-Game/RoomControls".visible = false
 	room_host = false
-	if has_node("Game"): remove_child($"../Game")
+	if has_node("Game"): remove_child($"./Game")
 	if choice: $WebSocketClient.send_request("leave_room")
 
 func on_game_started():

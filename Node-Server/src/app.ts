@@ -115,6 +115,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       room.broadcast("game_started", {
         game_state: room.game,
       });
+      return;
 
     case "pull_game_state":
     // Client is asking for current game state.
