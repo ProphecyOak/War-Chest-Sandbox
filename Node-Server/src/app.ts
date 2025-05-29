@@ -104,7 +104,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // RES game_settings
       if (room == undefined) return false;
       send_to_peer(ws, "supply_game_settings", {
-        game_state: room.game,
+        game_state: room.game.get_sendable(),
       });
       return;
 
@@ -113,8 +113,10 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       if (room == undefined) return false;
       if (!room.game.has_board) return false;
       room.broadcast("game_started", {
-        game_state: room.game,
+        game_state: room.game.get_sendable(),
       });
+      room.game.set_players(room.players);
+      room.game.start_round();
       return;
 
     case "pull_game_state":

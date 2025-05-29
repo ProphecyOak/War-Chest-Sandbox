@@ -67,7 +67,7 @@ func _process(_delta):
 
 func _on_room_code_text_changed(new_text):
 	room_id = new_text
-	$"../LobbyControls/Buttons/JoinButton".text = "Join Room" if room_id_given else "Create Room"
+	$"../Outside-Of-Game/LobbyControls/Buttons/JoinButton".text = "Join Room" if room_id_given else "Create Room"
 
 func handle_incoming_data(data: Dictionary):
 	if missing_keys(data, ["op"]):
@@ -115,6 +115,8 @@ func resolve_operation(data: Dictionary):
 			if missing_keys(data, ["game_state"]): return false
 			if game == null: return false;
 			game.render(data["game_state"])
+		"obligation":
+			print("%s: %s" % [UUID, data])
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()

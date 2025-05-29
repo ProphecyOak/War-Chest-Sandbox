@@ -1,5 +1,26 @@
 export { Unit };
 
+// enum UnitState {
+//   In_Supply = "In_Supply",
+//   In_Bag = "In_Bag",
+//   In_Hand = "In_Hand",
+//   Deployed = "Deployed",
+//   Discarded = "Discarded",
+//   Discarded_Face_Down = "Discarded_Face_Down",
+// }
+
+// interface Unit {
+//   id: number;
+//   unit_type_id: number;
+//   player_id: UUID;
+//   parent_unit_id: number;
+//   state: UnitState;
+//   position: hex_coord;
+//   quantity: number;
+//   image_name: string;
+//   bolster_units: Unit[];
+// }
+
 type Maneuver = "attack" | "control" | "tactic" | "move";
 
 type Trigger = "attacked" | "moved";
