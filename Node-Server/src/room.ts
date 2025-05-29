@@ -26,7 +26,7 @@ class Room {
     this._host = creator;
     this.id = randomUUID();
     this.add_peer(creator, ws);
-    this.game = new Game(this.sockets);
+    this.game = new Game(this.sockets, this.broadcast);
     Room.rooms.set(this.id, this);
     console.log(`Room: ${this.id} created.`);
   }

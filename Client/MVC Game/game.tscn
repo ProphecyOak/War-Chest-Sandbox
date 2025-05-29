@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://5t7fc2u7u1k3"]
+[gd_scene load_steps=4 format=3 uid="uid://5t7fc2u7u1k3"]
 
 [ext_resource type="Script" uid="uid://duefdn0o7q2ag" path="res://MVC Game/game.gd" id="1_ykbwy"]
 [ext_resource type="PackedScene" uid="uid://61nru7ev6jbi" path="res://MVC Game/Board/board.tscn" id="2_yqwy8"]
+[ext_resource type="PackedScene" uid="uid://c82pp55i1kjn3" path="res://MVC Game/Unit/coin_rack.tscn" id="3_g4n3h"]
 
 [node name="Game" type="Control"]
 layout_mode = 3
@@ -19,3 +20,34 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+offset_right = 280.0
+grow_vertical = 0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CoinRack" parent="MarginContainer" instance=ExtResource("3_g4n3h")]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -290.0
+offset_top = -110.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="CoinRack" parent="MarginContainer2" instance=ExtResource("3_g4n3h")]
+layout_mode = 2

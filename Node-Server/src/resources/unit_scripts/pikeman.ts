@@ -1,7 +1,3 @@
-import { Unit } from "../../components/unit";
+import { UnitClass } from "../../components/unit";
 
-const pikeman = new Unit(4);
-
-module.exports = {
-  unit: pikeman,
-};
+export const pikeman = new UnitClass(4, 0, "pikeman.png");

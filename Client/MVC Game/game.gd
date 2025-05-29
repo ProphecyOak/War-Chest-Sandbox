@@ -43,11 +43,20 @@ func load_game():
 #endregion
 
 
+func print_relevant_state(data, irrelevant_keys = []):
+	var cloned_data = data.duplicate()
+	if cloned_data is Dictionary:
+		for key in irrelevant_keys:
+			cloned_data[key] = null
+	print(JSON.stringify(data,"  "))
+
 func _ready():
 	load_game()
 
 func render(game_data):
 	$Board.update_board(game_data["board"])
+	for player in game_data["players"]:
+		print_relevant_state(player["units"])
 
 # Sets the hand to contain buttons for each coin in coins
 func update_hand(coins: Array[String]):

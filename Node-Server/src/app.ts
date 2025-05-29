@@ -112,11 +112,11 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // Client is asking to start the game.
       if (room == undefined) return false;
       if (!room.game.has_board) return false;
+      room.game.set_players(room.players);
       room.broadcast("game_started", {
         game_state: room.game.get_sendable(),
       });
-      room.game.set_players(room.players);
-      room.game.start_round();
+      room.game.start_draft();
       return;
 
     case "pull_game_state":
