@@ -21,7 +21,6 @@ class Game {
   decrees: string[] = [];
   game_over: boolean = false;
   private sockets: Map<UUID, WebSocket>;
-  private broadcast: (op_code: string, extras?: {}, origin_id?: UUID) => void;
 
   get has_board() {
     return this.board != undefined;
@@ -32,7 +31,6 @@ class Game {
     broadcast_func: (op_code: string, extras?: {}, origin_id?: UUID) => void
   ) {
     this.sockets = sockets;
-    this.broadcast = broadcast_func;
   }
 
   set_players(players: Map<UUID, Player>) {
@@ -70,11 +68,9 @@ class Game {
 
   start_draft() {
     this.players[0].units.push(
-      pikeman.create_coin(this.players[0].id, UnitState.In_Supply)
+      pikeman.create_coin(this.players[0].id, UnitState.In_Hand)
     );
-    this.broadcast("game_state", {
-      game_state: this.get_sendable(),
-    });
+    this.broadcast();
     this.start_round();
   }
 
@@ -106,6 +102,14 @@ class Game {
     //   return;
     // }
     console.log("Game Over");
+  }
+
+  broadcast() {
+    this.players.forEach((player: Player) => {
+      send_to_peer(this.sockets.get(player.id)!, "game_state", {
+        game_state: this.get_sendable(player.id),
+      });
+    });
   }
 
   get_sendable(to_player?: UUID) {
