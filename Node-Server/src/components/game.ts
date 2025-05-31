@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { randomUUID, UUID } from "crypto";
 import { WebSocket } from "ws";
 import { Player } from "./player";
 import { ObligationStack, ObligationType } from "./obligation_stack";
@@ -6,6 +6,7 @@ import { Board, BoardData, hex_coord } from "./board";
 import { send_to_peer } from "../server_tools";
 import { shuffle } from "../tools";
 import { pikeman } from "../resources/unit_scripts/pikeman";
+import { Unit, UnitClass, UnitState } from "./unit";
 
 export { Game };
 
@@ -68,7 +69,9 @@ class Game {
   }
 
   start_draft() {
-    this.players[0].units.push(pikeman.create_coin(this.players[0].id));
+    this.players[0].units.push(
+      pikeman.create_coin(this.players[0].id, UnitState.In_Supply)
+    );
     this.broadcast("game_state", {
       game_state: this.get_sendable(),
     });
@@ -105,8 +108,23 @@ class Game {
     console.log("Game Over");
   }
 
-  get_sendable() {
-    const { obligations, sockets, ...clone } = this;
+  get_sendable(to_player?: UUID) {
+    const { obligations, sockets, ...clone } = JSON.parse(
+      JSON.stringify(this)
+    ) as Game;
+    if (to_player) {
+      console.log(to_player);
+      console.log(clone.players);
+      clone.players
+        .filter((player: Player) => player.id != to_player)
+        .forEach((player: Player) => {
+          // FIXME Replace in-hand coins with filler coins so the other players know how many are left in hand.
+          player.units = player.units.filter(
+            (unit: Unit) =>
+              ![UnitState.In_Hand, UnitState.In_Bag].includes(unit.state)
+          );
+        });
+    }
     return clone;
   }
 }

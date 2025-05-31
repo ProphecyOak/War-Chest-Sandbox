@@ -114,6 +114,7 @@ func resolve_operation(data: Dictionary):
 		"game_state":
 			if missing_keys(data, ["game_state"]): return false
 			if game == null: return false;
+			print(JSON.stringify(data, "  "))
 			game.render(data["game_state"])
 		"obligation":
 			print("%s: %s" % [UUID, data])

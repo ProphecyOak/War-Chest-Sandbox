@@ -56,21 +56,12 @@ func _ready():
 func render(game_data):
 	$Board.update_board(game_data["board"])
 	for player in game_data["players"]:
-		print_relevant_state(player["units"])
+		for coin in player["units"]:
+			place_coin(coin)
 
-# Sets the hand to contain buttons for each coin in coins
-func update_hand(coins: Array[String]):
-	pass
-
-
-#Updates the board (i.e. hex color, unit locations, coin counts)
-func update_board():
-	pass
-
-
-func update_supply():
-	pass
-
-
-func update_discard():
-	pass
+func place_coin(coin: Dictionary):
+	match coin["state"]:
+		"In_Hand":
+			pass
+		_:
+			print("Unhandled coin state: %s" % coin["state"])

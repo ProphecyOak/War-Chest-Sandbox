@@ -110,8 +110,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
 
     case "start_game":
       // Client is asking to start the game.
-      if (room == undefined) return false;
-      if (!room.game.has_board) return false;
+      if (room == undefined || !room.game.has_board) return false;
       room.game.set_players(room.players);
       room.broadcast("game_started", {
         game_state: room.game.get_sendable(),
@@ -120,9 +119,11 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       return;
 
     case "pull_game_state":
-    // Client is asking for current game state.
-    // HAS null
-    // RES game_state
+      // Client is asking for current game state.
+      // HAS null
+      // RES game_state
+      if (room == undefined || !room.game.has_board) return false;
+      send_to_peer(ws, "game_state", room.game.get_sendable(peer_id));
 
     case "push_move":
     // Client is submitting a move

@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { hex_coord } from "./board";
 
-export { Unit, UnitClass };
+export { Unit, UnitClass, UnitState };
 
 enum UnitState {
   In_Supply = "In_Supply",
@@ -61,14 +61,14 @@ class UnitClass {
     this.behaviors.get(action)!(trigger_info);
   }
 
-  create_coin(player: UUID): Unit {
+  create_coin(player_id: UUID, state: UnitState = UnitState.In_Supply): Unit {
     return {
       class: this,
       id: UnitClass.next_id,
       unit_type_id: this.type_id,
-      player_id: player,
+      player_id,
       parent_unit_id: undefined,
-      state: UnitState.In_Supply,
+      state,
       position: undefined,
       image_name: this.image_name,
       bolster_units: [],
