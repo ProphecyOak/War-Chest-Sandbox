@@ -82,26 +82,43 @@ class Game {
           obligation_type: ObligationType.PLAY_COIN,
         });
       });
-    this.process_obligations();
+    this.send_next_obligation();
   }
 
-  process_obligations() {
-    while (!this.game_over && !this.obligations.empty) {
-      const current_obligation = this.obligations.pop();
-      send_to_peer(
-        this.sockets.get(current_obligation!.player)!,
-        "obligation",
-        {
-          obligation_type: current_obligation!.obligation_type,
-          context: current_obligation!.context,
-        }
-      );
+  send_next_obligation() {
+    if (this.game_over) {
+      console.log("Game Over!");
+      return;
     }
-    // if (!this.game_over) {
-    //   this.start_round();
-    //   return;
-    // }
-    console.log("Game Over");
+    if (this.obligations.empty) {
+      console.log("Obligations empty.");
+      return;
+    }
+    const current_obligation = this.obligations.peek();
+    send_to_peer(this.sockets.get(current_obligation!.player)!, "obligation", {
+      obligation_type: current_obligation!.obligation_type,
+      context: current_obligation!.context,
+    });
+  }
+
+  process_obligation_response(
+    data: {
+      obligation_type: ObligationType;
+      choice: unknown;
+    },
+    playerID: UUID
+  ) {
+    const current_obligation = this.obligations.peek();
+    if (
+      current_obligation == undefined ||
+      current_obligation.obligation_type != data.obligation_type ||
+      current_obligation.player != playerID
+    )
+      return;
+    switch (data.obligation_type) {
+    }
+    this.obligations.pop();
+    this.send_next_obligation();
   }
 
   broadcast() {

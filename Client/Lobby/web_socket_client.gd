@@ -117,6 +117,9 @@ func resolve_operation(data: Dictionary):
 			game.render(data["game_state"])
 		"obligation":
 			print("%s: %s" % [UUID, data])
+			send_request("obligation_response", {"answer":{
+				"obligation_type":data["obligation_type"]
+				}})
 		#"image":
 			#if missing_keys(data, ["image"]): return false
 			#var img = Image.new()

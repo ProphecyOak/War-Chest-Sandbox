@@ -69,7 +69,7 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // Client is asking to join an existing room.
       // HAS room_id
       // RES null
-      if (any_missing(ws, data, ["room_id"])) return;
+      if (any_missing(ws, data, ["room_id"])) return false;
       if (!Room.rooms.has(data.room_id)) {
         error_to_peer(ws, "invalid_room_id", data);
         return;
@@ -124,6 +124,16 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       // RES game_state
       if (room == undefined || !room.game.has_board) return false;
       send_to_peer(ws, "game_state", room.game.get_sendable(peer_id));
+      return;
+
+    case "obligation_response":
+      // Client is responding to obligation.
+      // HAS response
+      // RES obligation
+      if (any_missing(ws, data, ["answer"])) return false;
+      if (room == undefined || !room.game.has_board) return false;
+      room.game.process_obligation_response(data.answer, peer_id);
+      return;
 
     case "push_move":
     // Client is submitting a move
