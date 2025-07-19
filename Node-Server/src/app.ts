@@ -109,9 +109,11 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       return;
 
     case "start_game":
-      // Client is asking to start the game.
-      if (room == undefined || !room.game.has_board) return false;
+      // Client (host) is asking to start the game.
+      if (room == undefined || room.host != peer_id || !room.game.has_board)
+        return false;
       room.game.set_players(room.players);
+      room.broadcast("image_list", { images: room.images }, peer_id);
       room.broadcast("game_started", {
         game_state: room.game.get_sendable(),
       });
@@ -135,6 +137,15 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
       room.game.process_obligation_response(data.answer, peer_id);
       return;
 
+    case "push_image":
+      // Client (host) is providing an image it has.
+      // HAS image_string
+      // HAS image_id
+      // RES null
+      if (room == undefined || room.host != peer_id) return false;
+      room.images.units[data.image_id!] = data.image_string!;
+      return;
+
     case "push_move":
     // Client is submitting a move
     // HAS move (Datatype undecided so far)
@@ -152,11 +163,6 @@ function resolve_incoming_message(peer_id: UUID, data: WSData) {
     // HAS decision
     // BROADCAST pull_game
 
-    case "push_image":
-    // Client is providing an image it's been asked for.
-    // HAS image_string
-    // HAS image_id
-    // RES null
     default:
       console.log(`Unhandled message op: ${data.op} from:\n\t${peer_id}`);
       return;

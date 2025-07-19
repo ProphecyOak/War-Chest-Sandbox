@@ -90,11 +90,15 @@ func resolve_operation(data: Dictionary):
 			UUID = data["uuid"]
 		"player_joined":
 			if missing_keys(data, ["name"]): return false
+			#TODO SEND IMAGES TO GUEST
 			print("Player `%s` joined your room." % data["name"])
 		"room_created":
 			if missing_keys(data, ["room_id"]): return false
 			root.on_room_joined(data)
 			root.room_host = true
+			for x in load_units():
+				send_request("push_image", x)
+				Global.additional_icons["units"][x["image_id"]] = x["image_string"]
 		"joined_room":
 			if missing_keys(data, ["room_id"]): return false
 			root.on_room_joined(data)
@@ -120,14 +124,22 @@ func resolve_operation(data: Dictionary):
 			send_request("obligation_response", {"answer":{
 				"obligation_type":data["obligation_type"]
 				}})
+		"image_list":
+			if missing_keys(data, ["images"]): return false
+			for image_id in data["images"]["units"].keys():
+				var image_string = Marshalls.base64_to_raw(data["images"]["units"][image_id])
+				var img = Image.new()
+				img.load_png_from_buffer(image_string)
+				Global.additional_icons["units"][image_id] = img
+			print(Global.additional_icons)
 		#"image":
-			#if missing_keys(data, ["image"]): return false
+			#if missing_keys(data, ["image_string"]): return false
 			#var img = Image.new()
-			#img.load_png_from_buffer(Marshalls.base64_to_raw(data["image"]))
+			#img.load_png_from_buffer(Marshalls.base64_to_raw(data["image_string"]))
 			#var new_tex = ImageTexture.create_from_image(img)
-			#var new_sprite = Sprite2D.new()
-			#$".".add_child(new_sprite)
-			#new_sprite.texture = new_tex
+			##TODO DO SOMETHING WITH THIS?
+			#Global.additional_icons["units"][data["image_id"]] = new_tex
+			#print(Global.additional_icons)
 		_:
 			return false
 	return true
@@ -143,3 +155,21 @@ func missing_keys(data: Dictionary, keys: Array[String]):
 	
 func invalid_response(data, missing_key):
 	print("Received an invalid message: %s missing the key(s): %s" % [data, missing_key])
+
+func load_units():
+	#TODO Need to eventually allow for mod selection to selectively send images
+	#     instead of everything the host has to offer all at once.
+	var unit_images = []
+	var unit_dir = DirAccess.open("res://UserResources/Units")
+	for unit_name in unit_dir.get_directories():
+		if !unit_dir.file_exists("%s/coin.png" % unit_name): continue
+		var image_path = "res://UserResources/Units/%s/coin.png" % unit_name
+		unit_images.append({
+			"image_id": unit_name.to_lower(),
+			"image_string": encode_image(image_path)
+		})
+		Global.additional_icons["units"][unit_name.to_lower()] = load(image_path)
+	return unit_images
+
+func encode_image(filepath: String):
+	return Marshalls.raw_to_base64(load(filepath).get_image().save_png_to_buffer())

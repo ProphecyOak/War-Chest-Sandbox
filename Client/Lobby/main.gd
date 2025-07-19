@@ -20,7 +20,6 @@ var room_host = false:
 var room_id:
 	set(new_id):
 		room_id = new_id
-		var room_id_label = room_id_label
 		room_id_label.text = "Room ID: %s" % room_id
 		
 var in_game:
@@ -46,7 +45,7 @@ func on_room_joined(data):
 	room_id = data["room_id"]
 	room_host = false
 
-func on_leave_room(data, choice: bool = true):
+func on_leave_room(_data, choice: bool = true):
 	in_game = false
 	$"Outside-Of-Game/LobbyControls".visible = true
 	$"Outside-Of-Game/RoomControls".visible = false

@@ -10,6 +10,7 @@ class Room {
   static rooms = new Map<UUID, Room>();
 
   players = new Map<UUID, Player>();
+  images = { units: {} as { [key: string]: string } };
   sockets = new Map<UUID, WebSocket>();
   _host: UUID;
   id: UUID;

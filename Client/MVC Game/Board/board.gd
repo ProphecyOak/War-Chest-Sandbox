@@ -69,12 +69,12 @@ func hex_to_rec(hex_coords: Vector2i):
 	return hex_basis["x"] * hex_coords.x + hex_basis["y"] * hex_coords.y
 
 func center_board():
-	var board_size = (max_point - min_point)
-	$HexHolder.position = (board_size + Vector2(
-		-hex_size.x * (board_margin_multiplier / 2 + .25),
+	var board_max_dim = (max_point - min_point)
+	$HexHolder.position = (board_max_dim + Vector2(
+		-hex_size.x * (board_margin_multiplier / 2.0 + .25),
 		hex_size.y * board_margin_multiplier / 2
 		)) * $HexHolder.scale.x
-	custom_minimum_size = (board_size + hex_size * board_margin_multiplier) * $HexHolder.scale.x
+	custom_minimum_size = (board_max_dim + hex_size * board_margin_multiplier) * $HexHolder.scale.x
 
 func update_board(board_data):
 	if !initialized: initialize_board(board_data, false)
