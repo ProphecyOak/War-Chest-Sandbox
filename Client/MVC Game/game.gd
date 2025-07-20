@@ -3,6 +3,9 @@ class_name GameManager
 
 var web_socket: WebSocketClient = null
 
+@onready var your_coins = $YourCoins/CoinRack
+@onready var opponent_coins = $OpponentCoins/CoinRack
+
 #region saving/loading
 func save_game():
 	var save_file = FileAccess.open(Global.savegame_address, FileAccess.WRITE)
@@ -62,6 +65,7 @@ func render(game_data):
 func place_coin(coin: Dictionary):
 	match coin["state"]:
 		"In_Hand":
-			pass
+			if web_socket.UUID == coin["player_id"]: your_coins.add_coin(coin["class"]["image_id"])
+			else: opponent_coins.add_coin(coin["class"]["image_id"])
 		_:
 			print("Unhandled coin state: %s" % coin["state"])

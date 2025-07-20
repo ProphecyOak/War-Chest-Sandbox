@@ -98,7 +98,6 @@ func resolve_operation(data: Dictionary):
 			root.room_host = true
 			for x in load_units():
 				send_request("push_image", x)
-				Global.additional_icons["units"][x["image_id"]] = x["image_string"]
 		"joined_room":
 			if missing_keys(data, ["room_id"]): return false
 			root.on_room_joined(data)
@@ -127,19 +126,8 @@ func resolve_operation(data: Dictionary):
 		"image_list":
 			if missing_keys(data, ["images"]): return false
 			for image_id in data["images"]["units"].keys():
-				var image_string = Marshalls.base64_to_raw(data["images"]["units"][image_id])
-				var img = Image.new()
-				img.load_png_from_buffer(image_string)
-				Global.additional_icons["units"][image_id] = img
-			print(Global.additional_icons)
-		#"image":
-			#if missing_keys(data, ["image_string"]): return false
-			#var img = Image.new()
-			#img.load_png_from_buffer(Marshalls.base64_to_raw(data["image_string"]))
-			#var new_tex = ImageTexture.create_from_image(img)
-			##TODO DO SOMETHING WITH THIS?
-			#Global.additional_icons["units"][data["image_id"]] = new_tex
-			#print(Global.additional_icons)
+				var img = decode_image(data["images"]["units"][image_id])
+				Global.additional_icons["units"][image_id] = ImageTexture.create_from_image(img)
 		_:
 			return false
 	return true
@@ -168,8 +156,14 @@ func load_units():
 			"image_id": unit_name.to_lower(),
 			"image_string": encode_image(image_path)
 		})
-		Global.additional_icons["units"][unit_name.to_lower()] = load(image_path)
+		var new_unit_texture = ImageTexture.create_from_image(load(image_path).get_image())
+		Global.additional_icons["units"][unit_name.to_lower()] = new_unit_texture
 	return unit_images
 
 func encode_image(filepath: String):
 	return Marshalls.raw_to_base64(load(filepath).get_image().save_png_to_buffer())
+
+func decode_image(encoded: String):
+	var img = Image.new()
+	img.load_png_from_buffer(Marshalls.base64_to_raw(encoded))
+	return img

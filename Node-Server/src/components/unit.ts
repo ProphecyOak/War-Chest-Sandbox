@@ -20,7 +20,7 @@ interface Unit {
   parent_unit_id: number | undefined;
   state: UnitState;
   position: hex_coord | undefined;
-  image_name: string;
+  image_id: string;
   bolster_units: Unit[];
 }
 
@@ -38,12 +38,12 @@ class UnitClass {
   behaviors: Map<Trigger, Function> = new Map<Trigger, Function>();
   maneuvers: Map<Maneuver, Function> = new Map<Maneuver, Function>();
   type_id: number;
-  image_name: string;
+  image_id: string;
 
-  constructor(coin_count: number, type_id: number, image_name: string) {
+  constructor(coin_count: number, type_id: number, image_id: string) {
     this.coin_count = coin_count;
     this.type_id = type_id;
-    this.image_name = image_name;
+    this.image_id = image_id;
   }
 
   can(action: Maneuver, behavior: () => {}) {
@@ -70,7 +70,7 @@ class UnitClass {
       parent_unit_id: undefined,
       state,
       position: undefined,
-      image_name: this.image_name,
+      image_id: this.image_id,
       bolster_units: [],
     };
   }

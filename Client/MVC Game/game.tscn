@@ -21,7 +21,7 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="YourCoins" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -32,22 +32,19 @@ grow_vertical = 0
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="CoinRack" parent="MarginContainer" instance=ExtResource("3_g4n3h")]
+[node name="CoinRack" parent="YourCoins" instance=ExtResource("3_g4n3h")]
 layout_mode = 2
 
-[node name="MarginContainer2" type="MarginContainer" parent="."]
+[node name="OpponentCoins" type="MarginContainer" parent="."]
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
 offset_left = -290.0
-offset_top = -110.0
+offset_bottom = 110.0
 grow_horizontal = 0
-grow_vertical = 0
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
 
-[node name="CoinRack" parent="MarginContainer2" instance=ExtResource("3_g4n3h")]
+[node name="CoinRack" parent="OpponentCoins" instance=ExtResource("3_g4n3h")]
 layout_mode = 2

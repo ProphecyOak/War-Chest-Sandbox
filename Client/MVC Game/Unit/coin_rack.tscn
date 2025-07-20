@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://c82pp55i1kjn3"]
+[gd_scene load_steps=3 format=3 uid="uid://c82pp55i1kjn3"]
 
 [ext_resource type="PackedScene" uid="uid://ciyt0kufoj5yt" path="res://MVC Game/Unit/Coin.tscn" id="1_8gwj2"]
+[ext_resource type="Script" uid="uid://c2xr8o08ndfum" path="res://MVC Game/coin_rack.gd" id="1_x3n5d"]
 
 [node name="CoinRack" type="PanelContainer"]
+script = ExtResource("1_x3n5d")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -16,10 +18,16 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="Coin" parent="MarginContainer/HBoxContainer" instance=ExtResource("1_8gwj2")]
+visible = false
 layout_mode = 2
+script = null
 
 [node name="Coin2" parent="MarginContainer/HBoxContainer" instance=ExtResource("1_8gwj2")]
+visible = false
 layout_mode = 2
+script = null
 
 [node name="Coin3" parent="MarginContainer/HBoxContainer" instance=ExtResource("1_8gwj2")]
+visible = false
 layout_mode = 2
+script = null

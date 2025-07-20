@@ -67,9 +67,13 @@ class Game {
   }
 
   start_draft() {
-    this.players[0].units.push(
-      pikeman.create_coin(this.players[0].id, UnitState.In_Hand)
-    );
+    for (let p = 0; p < this.players.length; p++) {
+      for (let c = 0; c < 3; c++) {
+        this.players[p].units.push(
+          pikeman.create_coin(this.players[p].id, UnitState.In_Hand)
+        );
+      }
+    }
     this.broadcast();
     this.start_round();
   }
@@ -135,16 +139,16 @@ class Game {
     ) as Game;
     if (to_player) {
       console.log(to_player);
-      console.log(clone.players);
-      clone.players
-        .filter((player: Player) => player.id != to_player)
-        .forEach((player: Player) => {
-          // FIXME Replace in-hand coins with filler coins so the other players know how many are left in hand.
-          player.units = player.units.filter(
-            (unit: Unit) =>
-              ![UnitState.In_Hand, UnitState.In_Bag].includes(unit.state)
-          );
-        });
+      console.log(clone.players[0]);
+      // clone.players
+      //   .filter((player: Player) => player.id != to_player)
+      //   .forEach((player: Player) => {
+      //     // FIXME Replace in-hand coins with filler coins so the other players know how many are left in hand.
+      //     player.units = player.units.filter(
+      //       (unit: Unit) =>
+      //         ![UnitState.In_Hand, UnitState.In_Bag].includes(unit.state)
+      //     );
+      //   });
     }
     return clone;
   }

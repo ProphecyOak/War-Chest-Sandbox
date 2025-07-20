@@ -1,6 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://ciyt0kufoj5yt"]
+[gd_scene load_steps=3 format=3 uid="uid://ciyt0kufoj5yt"]
 
 [ext_resource type="Texture2D" uid="uid://d46dhfu061hv" path="res://Assets/CoinBack.png" id="1_dohuv"]
+
+[sub_resource type="GDScript" id="GDScript_dohuv"]
+script/source = "extends TextureButton
+
+func changeVisibility(new_visibility = !visible):
+		visible = new_visibility
+
+func change_coin(new_texture: String):
+	texture_normal = Global.additional_icons[\"units\"][new_texture]
+"
 
 [node name="Coin" type="TextureButton"]
 custom_minimum_size = Vector2(80, 80)
@@ -18,3 +28,4 @@ size_flags_vertical = 3
 texture_normal = ExtResource("1_dohuv")
 ignore_texture_size = true
 stretch_mode = 5
+script = SubResource("GDScript_dohuv")
