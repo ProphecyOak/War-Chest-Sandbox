@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://huu6rkemlj3c"]
+
+[ext_resource type="Script" uid="uid://bcjeqxvo0gabn" path="res://MVC Game/Board/hexagon.gd" id="1_o1yk3"]
+
+[node name="Hexagon" type="Node2D"]
+script = ExtResource("1_o1yk3")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(0.82, 0.724333, 0.533, 1)
+polygon = PackedVector2Array(-25, 0, -12.5, -21.651, 12.5, -21.651, 25, 0, 12.5, 21.651, -12.5, 21.651)
