@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://w83yv6ahm6t1"]
+
+[ext_resource type="Script" uid="uid://ba33jad3ehnqs" path="res://MVC Game/Unit/coin_stack.gd" id="1_8bqge"]
+[ext_resource type="PackedScene" uid="uid://ciyt0kufoj5yt" path="res://MVC Game/Unit/Coin.tscn" id="1_yh2ux"]
+
+[node name="CoinStack" type="VBoxContainer"]
+theme_override_constants/separation = -90
+script = ExtResource("1_8bqge")
+
+[node name="Coin" parent="." instance=ExtResource("1_yh2ux")]
+visible = false
+layout_mode = 2
+
+[node name="Coin2" parent="." instance=ExtResource("1_yh2ux")]
+visible = false
+layout_mode = 2
+
+[node name="Coin3" parent="." instance=ExtResource("1_yh2ux")]
+visible = false
+layout_mode = 2
+
+[node name="Coin4" parent="." instance=ExtResource("1_yh2ux")]
+visible = false
+layout_mode = 2
+
+[node name="Coin5" parent="." instance=ExtResource("1_yh2ux")]
+visible = false
+layout_mode = 2

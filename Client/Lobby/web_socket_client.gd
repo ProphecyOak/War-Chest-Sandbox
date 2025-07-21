@@ -90,7 +90,6 @@ func resolve_operation(data: Dictionary):
 			UUID = data["uuid"]
 		"player_joined":
 			if missing_keys(data, ["name"]): return false
-			#TODO SEND IMAGES TO GUEST
 			print("Player `%s` joined your room." % data["name"])
 		"room_created":
 			if missing_keys(data, ["room_id"]): return false

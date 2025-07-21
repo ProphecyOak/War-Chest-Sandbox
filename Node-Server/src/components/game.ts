@@ -68,11 +68,21 @@ class Game {
 
   start_draft() {
     for (let p = 0; p < this.players.length; p++) {
-      for (let c = 0; c < 3; c++) {
-        this.players[p].units.push(
-          pikeman.create_coin(this.players[p].id, UnitState.In_Hand)
-        );
-      }
+      this.players[p].units.push(
+        pikeman.create_coin(this.players[p].id, UnitState.In_Hand)
+      );
+      this.players[p].units.push(
+        pikeman.create_coin(this.players[p].id, UnitState.Discarded)
+      );
+      this.players[p].units.push(
+        pikeman.create_coin(this.players[p].id, UnitState.Discarded_Face_Down)
+      );
+      this.players[p].units.push(
+        pikeman.create_coin(this.players[p].id, UnitState.In_Bag)
+      );
+      this.players[p].units.push(
+        pikeman.create_coin(this.players[p].id, UnitState.In_Supply)
+      );
     }
     this.broadcast();
     this.start_round();
