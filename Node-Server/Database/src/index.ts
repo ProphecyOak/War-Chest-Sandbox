@@ -1,20 +1,66 @@
-import { AppDataSource } from "./data-source"
-import { User } from "./entity/User"
+import "reflect-metadata";
+import { AppDataSource } from "./data-source";
 
-AppDataSource.initialize().then(async () => {
+import http from "http";
+import express from "express";
+import { Request, Response } from "express";
+import { setup_HTTP_routes } from "./routes/http-routes";
 
-    console.log("Inserting a new user into the database...")
-    const user = new User()
-    user.firstName = "Timber"
-    user.lastName = "Saw"
-    user.age = 25
-    await AppDataSource.manager.save(user)
-    console.log("Saved a new user with id: " + user.id)
+const PORT_NUMBER = 3000;
+const REGISTRY_URL = "http://wcpp-registry:3000";
 
-    console.log("Loading users from the database...")
-    const users = await AppDataSource.manager.find(User)
-    console.log("Loaded users: ", users)
+const app = express();
+setup_HTTP_routes(app);
+app.use(express.json());
+const server = http.createServer(app);
 
-    console.log("Here you can setup and run express / fastify / any other framework.")
+// Retry logic for registry
+async function registerWithRetry(name: string, url: string, maxRetries = 5) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const res = await fetch(`${REGISTRY_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, url }),
+      });
+      if (!res.ok) throw new Error(`Status ${res.status}`);
+      console.log("Registered with registry");
+      return;
+    } catch (err) {
+      console.log(
+        `Failed to register (attempt ${i + 1}): ${(err as Error).message}`
+      );
+      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+  console.log("Could not register with registry. Exiting.");
+  process.exit(1);
+}
 
-}).catch(error => console.log(error))
+async function lookupService(name: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
+    if (!res.ok) throw new Error(`Status ${res.status}`);
+    const { url } = await res.json();
+    return url;
+  } catch (err) {
+    console.log(`Lookup failed for ${name}: ${(err as Error).message}`);
+    return null;
+  }
+}
+
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM signal. Initiating graceful shutdown...");
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+AppDataSource.initialize()
+  .then(async () => {
+    server.listen(PORT_NUMBER, () => {
+      console.log(`Database service listening on port ${PORT_NUMBER}`);
+      registerWithRetry("wcpp-db", `http://wcpp-db:${PORT_NUMBER}`);
+    });
+  })
+  .catch((error) => console.log(error));
