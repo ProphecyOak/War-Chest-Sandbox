@@ -1,11 +1,18 @@
 import express from "express";
 import { Request, Response } from "express";
 
+import ws from "ws";
+import http from "http";
+import { randomUUID, UUID } from "crypto";
+
 const PORT_NUMBER = 3000;
 const REGISTRY_URL = "http://wcpp-registry:3000";
 
 const app = express();
 app.use(express.json());
+const server = http.createServer(app);
+
+const wss = new ws.Server({ server });
 
 // Retry logic for registry
 async function registerWithRetry(name: string, url: string, maxRetries = 5) {
@@ -42,7 +49,23 @@ async function lookupService(name: string): Promise<string | null> {
   }
 }
 
-app.listen(PORT_NUMBER, () => {
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello from the WCPP Gateway!");
+});
+
+wss.on("connection", (ws: WebSocket) => {
+  console.log("Client connected to WebSocketServer.");
+});
+
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM signal. Initiating graceful shutdown...");
+  // TODO: Implement logic to kill ongoing WSS connections.
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+server.listen(PORT_NUMBER, () => {
   console.log(`Gateway service listening on port ${PORT_NUMBER}`);
   registerWithRetry("wcpp-gateway", `http://wcpp-gateway:${PORT_NUMBER}`);
 });

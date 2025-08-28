@@ -1,3 +1,4 @@
+import http from "http";
 import express from "express";
 import { Request, Response } from "express";
 
@@ -5,6 +6,7 @@ const PORT = 3000;
 
 const app = express();
 app.use(express.json());
+const server = http.createServer(app);
 
 const services: Record<string, string> = {};
 
@@ -29,6 +31,13 @@ app.get("/lookup", (req: Request, res: Response) => {
   res.json({ url });
 });
 
-app.listen(PORT, () => {
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM signal. Initiating graceful shutdown...");
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Registry service listening on port ${PORT}`);
 });

@@ -1,3 +1,4 @@
+import http from "http";
 import express from "express";
 import { Request, Response } from "express";
 
@@ -6,6 +7,7 @@ const REGISTRY_URL = "http://wcpp-registry:3000";
 
 const app = express();
 app.use(express.json());
+const server = http.createServer(app);
 
 // Retry logic for registry
 async function registerWithRetry(name: string, url: string, maxRetries = 5) {
@@ -42,7 +44,14 @@ async function lookupService(name: string): Promise<string | null> {
   }
 }
 
-app.listen(PORT_NUMBER, () => {
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM signal. Initiating graceful shutdown...");
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
+server.listen(PORT_NUMBER, () => {
   console.log(`Logic service listening on port ${PORT_NUMBER}`);
   registerWithRetry("wcpp-logic", `http://wcpp-logic:${PORT_NUMBER}`);
 });
