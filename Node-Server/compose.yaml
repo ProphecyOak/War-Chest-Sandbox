@@ -1,0 +1,57 @@
+services:
+  wcpp-registry:
+    build:
+      context: ./Registry
+    container_name: wcpp-registry
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /src
+    networks:
+      - corinthian
+  postgres:
+    image: "postgres:17.2"
+    container_name: wcpp-db
+    environment:
+      POSTGRES_USER: "test"
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_DB: "test"
+    depends_on:
+      - wcpp-registry
+    networks:
+      - corinthian
+  wcpp-logic:
+    build:
+      context: ./Logic
+    container_name: wcpp-logic
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /src
+    depends_on:
+      - wcpp-registry
+    networks:
+      - corinthian
+  wcpp-gateway:
+    build:
+      context: ./Gateway
+    container_name: wcpp-gateway
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /src
+    depends_on:
+      - wcpp-registry
+      - postgres
+      - wcpp-logic
+    networks:
+      - corinthian
+    ports:
+      - "9080:3000"
+
+networks:
+  corinthian:
+    driver: bridge
