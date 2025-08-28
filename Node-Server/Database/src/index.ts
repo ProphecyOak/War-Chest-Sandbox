@@ -10,7 +10,6 @@ const PORT_NUMBER = 3000;
 const REGISTRY_URL = "http://wcpp-registry:3000";
 
 const app = express();
-setup_HTTP_routes(app);
 app.use(express.json());
 const server = http.createServer(app);
 
@@ -49,8 +48,11 @@ async function lookupService(name: string): Promise<string | null> {
   }
 }
 
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
   console.log("Received SIGTERM signal. Initiating graceful shutdown...");
+  if (AppDataSource.isInitialized) {
+    await AppDataSource.dropDatabase().finally(() => AppDataSource.destroy());
+  }
   server.close(() => {
     process.exit(0);
   });
@@ -58,6 +60,7 @@ process.on("SIGTERM", () => {
 
 AppDataSource.initialize()
   .then(async () => {
+    await setup_HTTP_routes(app, AppDataSource);
     server.listen(PORT_NUMBER, () => {
       console.log(`Database service listening on port ${PORT_NUMBER}`);
       registerWithRetry("wcpp-db", `http://wcpp-db:${PORT_NUMBER}`);
