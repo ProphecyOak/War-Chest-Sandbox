@@ -1,14 +1,18 @@
+import http, { IncomingMessage } from "http";
+
 import express from "express";
 import { Request, Response } from "express";
+import { setup_HTTP_routes } from "./routes/http-routes";
 
-import ws from "ws";
-import http from "http";
+import ws, { WebSocket } from "ws";
+import { setup_WS_routes } from "./routes/ws-routes";
 import { randomUUID, UUID } from "crypto";
 
 const PORT_NUMBER = 3000;
 const REGISTRY_URL = "http://wcpp-registry:3000";
 
 const app = express();
+setup_HTTP_routes(app);
 app.use(express.json());
 const server = http.createServer(app);
 
@@ -53,8 +57,13 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello from the WCPP Gateway!");
 });
 
-wss.on("connection", (ws: WebSocket) => {
-  console.log("Client connected to WebSocketServer.");
+wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+  console.log("WS client has connected.");
+  var supplied_id = req.headers.uuid;
+  var client_id: UUID;
+  if (supplied_id == "null") client_id = randomUUID();
+  else client_id = supplied_id as UUID;
+  setup_WS_routes(ws, client_id);
 });
 
 process.on("SIGTERM", () => {

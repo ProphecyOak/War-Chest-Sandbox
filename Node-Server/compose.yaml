@@ -3,54 +3,56 @@ services:
     build:
       context: ./Registry
     container_name: wcpp-registry
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /src
+    expose:
+      - "3000"
+    networks:
+      - corinthian
+  wcpp-db:
+    build:
+      context: ./Database
+    container_name: wcpp-db
+    depends_on:
+      - wcpp-registry
+      - postgres
+    expose:
+      - "3000"
     networks:
       - corinthian
   postgres:
     image: "postgres:17.2"
-    container_name: wcpp-db
+    container_name: postgres
     environment:
       POSTGRES_USER: "test"
       POSTGRES_PASSWORD: "test"
       POSTGRES_DB: "test"
-    depends_on:
-      - wcpp-registry
+    expose:
+      - "5432"
     networks:
       - corinthian
   wcpp-logic:
     build:
       context: ./Logic
     container_name: wcpp-logic
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /src
     depends_on:
       - wcpp-registry
+    expose:
+      - "3000"
     networks:
       - corinthian
   wcpp-gateway:
     build:
       context: ./Gateway
     container_name: wcpp-gateway
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /src
     depends_on:
       - wcpp-registry
-      - postgres
       - wcpp-logic
-    networks:
-      - corinthian
+      - wcpp-db
+    expose:
+      - "3000"
     ports:
       - "9080:3000"
+    networks:
+      - corinthian
 
 networks:
   corinthian:
