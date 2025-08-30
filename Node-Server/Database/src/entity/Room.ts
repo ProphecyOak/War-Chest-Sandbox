@@ -6,6 +6,6 @@ export class Room {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToMany(() => Player, (player) => player.room_id)
+  @OneToMany(() => Player, (player) => player.room)
   players: Player[];
 }

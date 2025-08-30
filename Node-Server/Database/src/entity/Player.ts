@@ -22,11 +22,17 @@ export class Player {
   coins: Coin[];
 
   @ManyToOne(() => Room, (room) => room.players, { nullable: true })
-  room_id: string;
+  room: Room;
 
   @Column({ type: "enum", enum: PLAYER_ROLE, default: PLAYER_ROLE.SPECTATOR })
   role: PLAYER_ROLE;
 
   @Column({ default: false })
   host: boolean;
+
+  toString(): string {
+    return `Player: ${this.id} ${this.host ? ", host" : ""}. Has the ${
+      this.role
+    } role.`;
+  }
 }

@@ -59,8 +59,8 @@ process.on("SIGTERM", async () => {
 });
 
 AppDataSource.initialize()
-  .then(async () => {
-    await setup_HTTP_routes(app, AppDataSource);
+  .then(() => {
+    setup_HTTP_routes(app, AppDataSource);
     server.listen(PORT_NUMBER, () => {
       console.log(`Database service listening on port ${PORT_NUMBER}`);
       registerWithRetry("wcpp-db", `http://wcpp-db:${PORT_NUMBER}`);
