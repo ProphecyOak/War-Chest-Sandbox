@@ -11,13 +11,6 @@ import { randomUUID, UUID } from "crypto";
 const PORT_NUMBER = 3000;
 const REGISTRY_URL = "http://wcpp-registry:3000";
 
-const app = express();
-setup_HTTP_routes(app);
-app.use(express.json());
-const server = http.createServer(app);
-
-const wss = new ws.Server({ server });
-
 // Retry logic for registry
 async function registerWithRetry(name: string, url: string, maxRetries = 5) {
   for (let i = 0; i < maxRetries; i++) {
@@ -52,6 +45,13 @@ async function lookupService(name: string): Promise<string | null> {
     return null;
   }
 }
+
+const app = express();
+setup_HTTP_routes(app, lookupService);
+app.use(express.json());
+const server = http.createServer(app);
+
+const wss = new ws.Server({ server });
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello from the WCPP Gateway!");

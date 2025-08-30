@@ -3,15 +3,10 @@ import { AppDataSource } from "./data-source";
 
 import http from "http";
 import express from "express";
-import { Request, Response } from "express";
 import { setup_HTTP_routes } from "./routes/http-routes";
 
 const PORT_NUMBER = 3000;
 const REGISTRY_URL = "http://wcpp-registry:3000";
-
-const app = express();
-app.use(express.json());
-const server = http.createServer(app);
 
 // Retry logic for registry
 async function registerWithRetry(name: string, url: string, maxRetries = 5) {
@@ -48,6 +43,10 @@ async function lookupService(name: string): Promise<string | null> {
   }
 }
 
+const app = express();
+app.use(express.json());
+const server = http.createServer(app);
+
 process.on("SIGTERM", async () => {
   console.log("Received SIGTERM signal. Initiating graceful shutdown...");
   if (AppDataSource.isInitialized) {
@@ -60,7 +59,7 @@ process.on("SIGTERM", async () => {
 
 AppDataSource.initialize()
   .then(() => {
-    setup_HTTP_routes(app, AppDataSource);
+    setup_HTTP_routes(app, lookupService, AppDataSource);
     server.listen(PORT_NUMBER, () => {
       console.log(`Database service listening on port ${PORT_NUMBER}`);
       registerWithRetry("wcpp-db", `http://wcpp-db:${PORT_NUMBER}`);
