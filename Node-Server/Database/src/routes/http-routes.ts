@@ -15,8 +15,10 @@ export async function setup_HTTP_routes(
     res.send("Test route to wcpp database works.");
   });
 
-  app.put("/player", (req: Request, res: Response) => {
-    res.status(501).json({ error: "Route not implemented." });
+  app.post("/new-player", async (req: Request, res: Response) => {
+    const new_player = new Player();
+    await db.getRepository(Player).insert(new_player);
+    res.status(201).json({ status: "created", uuid: new_player.id });
   });
 
   app.get("/player", async (req: Request, res: Response) => {
