@@ -12,7 +12,7 @@ export async function setup_HTTP_routes(
     res.send("Test route to wcpp gateway works.");
   });
 
-  app.get(/\/db\/.*/, async (req: Request, res: Response) => {
+  app.all(/\/db\/.*/, async (req: Request, res: Response) => {
     const db_url = await get_db_url();
     const result = await fetch(`${db_url}${req.originalUrl.substring(3)}`);
     res.json(await result.json());
