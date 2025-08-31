@@ -18,7 +18,9 @@ export async function setup_WS_routes(
   ws.on("message", (packet: RawData) => {
     const data = JSON.parse(packet.toString());
     console.log(
-      `Received message containing this data: ${JSON.stringify(data)}`
+      `Received message from ${client_id} containing this data: ${JSON.stringify(
+        data
+      )}`
     );
   });
   ws.on("close", () => {

@@ -18,6 +18,9 @@ export class Player {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  // TODO: Make a last_interaction column to
+  // track last time user interacted with system.
+
   @OneToMany(() => Coin, (coin) => coin.player_id)
   coins: Coin[];
 

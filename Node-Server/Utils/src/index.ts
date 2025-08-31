@@ -1,31 +1,43 @@
 export const PORT_NUMBER = 3000;
 export const REGISTRY_URL = "http://wcpp-registry:3000";
 
-// Retry logic for registry
-export async function registerWithRetry(
-  name: string,
-  url: string,
+// Retry logic
+
+export async function retryFunction<T>(
+  asyncFunc: () => Promise<{ status: number; res?: T; message?: string }>,
   maxRetries = 5
-) {
+): Promise<{ attempts: number; result: T }> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const res = await fetch(`${REGISTRY_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, url }),
-      });
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      console.log("Registered with registry");
-      return;
+      const { status, res, message } = await asyncFunc();
+      if (status != 200)
+        throw new Error(
+          `Status ${status} ${message ? `with reason: ${message}` : ""}`
+        );
+      return { attempts: i + 1, result: res! };
     } catch (err) {
-      console.log(
-        `Failed to register (attempt ${i + 1}): ${(err as Error).message}`
-      );
+      console.log(`Received error on attempt: ${(err as Error).message}`);
       await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
     }
   }
-  console.log("Could not register with registry. Exiting.");
   process.exit(1);
+}
+
+export async function registerWithRetry(name: string, url: string) {
+  const fetchFunc = async () => {
+    const res = await fetch(`${REGISTRY_URL}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, url }),
+    });
+    return res.ok
+      ? { status: 200, res }
+      : { status: res.status, message: "Unable to register." };
+  };
+  const { attempts } = await retryFunction(fetchFunc);
+  console.log(
+    `Successfully registered in ${attempts} ${attempts > 1 ? "tries" : "try"}.`
+  );
 }
 
 async function lookupService(name: string): Promise<string | null> {
