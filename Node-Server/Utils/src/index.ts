@@ -28,7 +28,7 @@ export async function registerWithRetry(
   process.exit(1);
 }
 
-export async function lookupService(name: string): Promise<string | null> {
+async function lookupService(name: string): Promise<string | null> {
   try {
     const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
     if (!res.ok) throw new Error(`Status ${res.status}`);
@@ -38,6 +38,14 @@ export async function lookupService(name: string): Promise<string | null> {
     console.log(`Lookup failed for ${name}: ${(err as Error).message}`);
     return null;
   }
+}
+
+export function get_url_factory(name: string) {
+  let url: string | null = null;
+  return async () => {
+    if (url == null) url = (await lookupService(name)) as string;
+    return url;
+  };
 }
 
 // ****************************************************

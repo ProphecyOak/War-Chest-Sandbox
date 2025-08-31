@@ -1,13 +1,28 @@
 import { RawData, WebSocket } from "ws";
-import { randomUUID, UUID } from "crypto";
-import { IncomingMessage } from "http";
+import { Response, Request } from "express";
+import * as WCPP from "wcpp-utils";
 
-export function setup_WS_routes(ws: WebSocket, uuid: UUID) {
+export async function setup_WS_routes(
+  ws: WebSocket,
+  client_id: string,
+  socket_peers: Record<string, WebSocket>
+) {
+  const get_db_url = await WCPP.get_url_factory("wcpp-db");
+  const db_url = await get_db_url();
+  console.log(`Sending request: ${`${db_url}/player?id=${client_id}`}`);
+  const id_check_result = await fetch(`${db_url}/player?id=${client_id}`);
+  if (id_check_result.status == 400) {
+    ws.close(1002, "ID not found in database.");
+  }
+
   ws.on("message", (packet: RawData) => {
     const data = JSON.parse(packet.toString());
-    console.log(`Received message containing this data: ${data}`);
+    console.log(
+      `Received message containing this data: ${JSON.stringify(data)}`
+    );
   });
   ws.on("close", () => {
     console.log("WS client has disconnected.");
+    delete socket_peers[client_id];
   });
 }

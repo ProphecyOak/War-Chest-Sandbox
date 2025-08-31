@@ -6,12 +6,11 @@ import { setup_HTTP_routes } from "./routes/http-routes";
 
 import ws, { WebSocket } from "ws";
 import { setup_WS_routes } from "./routes/ws-routes";
-import { randomUUID, UUID } from "crypto";
 
 import * as WCPP from "wcpp-utils";
 
 const app = express();
-setup_HTTP_routes(app, WCPP.lookupService);
+setup_HTTP_routes(app);
 app.use(express.json());
 const server = http.createServer(app);
 
@@ -21,18 +20,24 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello from the WCPP Gateway!");
 });
 
-wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
-  console.log("WS client has connected.");
-  var supplied_id = req.headers.uuid;
-  var client_id: UUID;
-  if (supplied_id == "null") client_id = randomUUID();
-  else client_id = supplied_id as UUID;
-  setup_WS_routes(ws, client_id);
+const socket_peers: Record<string, WebSocket> = {};
+
+wss.on("connection", async (ws: WebSocket, req: IncomingMessage) => {
+  var supplied_id = req.headers.id;
+  if (typeof supplied_id !== "string") {
+    ws.close(1002, "ID invalid or missing.");
+    return;
+  }
+  socket_peers[supplied_id] = ws;
+  console.log(`WS client has connected with ${supplied_id}.`);
+  await setup_WS_routes(ws, supplied_id as string, socket_peers);
 });
 
 process.on("SIGTERM", () => {
   console.log("Received SIGTERM signal. Initiating graceful shutdown...");
-  // TODO: Implement logic to kill ongoing WSS connections.
+  Object.values(socket_peers).forEach((socket: WebSocket) => {
+    socket.close(1001);
+  });
   server.close(() => {
     process.exit(0);
   });
