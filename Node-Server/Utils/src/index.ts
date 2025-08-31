@@ -39,3 +39,7 @@ export async function lookupService(name: string): Promise<string | null> {
     return null;
   }
 }
+
+// ****************************************************
+// `npm run update` to push changes to other packages.
+// ****************************************************
