@@ -1,8 +1,13 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node
 
-COPY package*.json .
-COPY tsconfig.json .
-COPY src .
+WORKDIR /Utils
+COPY Utils/ .
+
+WORKDIR /App
+
+COPY Gateway/package*.json .
+COPY Gateway/tsconfig.json .
+COPY Gateway/src .
 
 RUN npm install
 

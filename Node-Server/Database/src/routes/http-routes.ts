@@ -1,14 +1,11 @@
 import express from "express";
 import { Request, Response } from "express";
 import { DataSource } from "typeorm";
-import { Player, PLAYER_ROLE } from "../entity/Player";
+import { Player } from "../entity/Player";
 import { Room } from "../entity/Room";
+import * as WCPP from "wcpp-utils";
 
-export async function setup_HTTP_routes(
-  app: express.Express,
-  lookupService: (name: string) => Promise<string | null>,
-  db: DataSource
-) {
+export async function setup_HTTP_routes(app: express.Express, db: DataSource) {
   await databaseTest(db);
   app.use(express.json());
   app.get("/test", (req: Request, res: Response) => {
@@ -32,8 +29,6 @@ export async function setup_HTTP_routes(
 
 async function databaseTest(db: DataSource) {
   console.log("Beginning database test...");
-  const player1 = new Player();
-  player1.host = true;
-  player1.role = PLAYER_ROLE.PLAYER;
-  console.log((await db.manager.save(player1)).id);
+  const room = new Room();
+  console.log((await db.manager.save(room)).id);
 }

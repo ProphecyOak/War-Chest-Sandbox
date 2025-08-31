@@ -1,8 +1,13 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node
 
-COPY package*.json .
-COPY tsconfig.json .
-COPY src .
+WORKDIR /Utils
+COPY Utils/ .
+
+WORKDIR /App
+
+COPY Logic/package*.json .
+COPY Logic/tsconfig.json .
+COPY Logic/src .
 
 RUN npm install
 

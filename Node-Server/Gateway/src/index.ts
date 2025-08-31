@@ -8,46 +8,10 @@ import ws, { WebSocket } from "ws";
 import { setup_WS_routes } from "./routes/ws-routes";
 import { randomUUID, UUID } from "crypto";
 
-const PORT_NUMBER = 3000;
-const REGISTRY_URL = "http://wcpp-registry:3000";
-
-// Retry logic for registry
-async function registerWithRetry(name: string, url: string, maxRetries = 5) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      const res = await fetch(`${REGISTRY_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, url }),
-      });
-      if (!res.ok) throw new Error(`Status ${res.status}`);
-      console.log("Registered with registry");
-      return;
-    } catch (err) {
-      console.log(
-        `Failed to register (attempt ${i + 1}): ${(err as Error).message}`
-      );
-      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
-    }
-  }
-  console.log("Could not register with registry. Exiting.");
-  process.exit(1);
-}
-
-async function lookupService(name: string): Promise<string | null> {
-  try {
-    const res = await fetch(`${REGISTRY_URL}/lookup?name=${name}`);
-    if (!res.ok) throw new Error(`Status ${res.status}`);
-    const { url } = await res.json();
-    return url;
-  } catch (err) {
-    console.log(`Lookup failed for ${name}: ${(err as Error).message}`);
-    return null;
-  }
-}
+import * as WCPP from "wcpp-utils";
 
 const app = express();
-setup_HTTP_routes(app, lookupService);
+setup_HTTP_routes(app, WCPP.lookupService);
 app.use(express.json());
 const server = http.createServer(app);
 
@@ -74,7 +38,10 @@ process.on("SIGTERM", () => {
   });
 });
 
-server.listen(PORT_NUMBER, () => {
-  console.log(`Gateway service listening on port ${PORT_NUMBER}`);
-  registerWithRetry("wcpp-gateway", `http://wcpp-gateway:${PORT_NUMBER}`);
+server.listen(WCPP.PORT_NUMBER, () => {
+  console.log(`Gateway service listening on port ${WCPP.PORT_NUMBER}`);
+  WCPP.registerWithRetry(
+    "wcpp-gateway",
+    `http://wcpp-gateway:${WCPP.PORT_NUMBER}`
+  );
 });

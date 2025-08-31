@@ -16,6 +16,7 @@
     "express": "^5.1.0",
     "http": "^0.0.1-security",
     "pg": "^8.16.3",
+    "wcpp-utils": "file:../Utils",
     "ws": "^8.18.3"
   },
   "devDependencies": {

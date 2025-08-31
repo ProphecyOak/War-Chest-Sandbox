@@ -1,8 +1,13 @@
 FROM mcr.microsoft.com/devcontainers/typescript-node
 
-COPY package*.json .
-COPY tsconfig.json .
-COPY src .
+WORKDIR /Utils
+COPY Utils/ .
+
+WORKDIR /App
+
+COPY Database/package*.json .
+COPY Database/tsconfig.json .
+COPY Database/src .
 
 RUN npm install
 

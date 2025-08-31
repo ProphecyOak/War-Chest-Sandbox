@@ -1,7 +1,7 @@
 services:
   wcpp-registry:
     build:
-      context: ./Registry
+      dockerfile: ./Registry/Dockerfile
     container_name: wcpp-registry
     expose:
       - "3000"
@@ -9,7 +9,7 @@ services:
       - corinthian
   wcpp-db:
     build:
-      context: ./Database
+      dockerfile: ./Database/Dockerfile
     container_name: wcpp-db
     depends_on:
       - wcpp-registry
@@ -31,7 +31,7 @@ services:
       - corinthian
   wcpp-logic:
     build:
-      context: ./Logic
+      dockerfile: ./Logic/Dockerfile
     container_name: wcpp-logic
     depends_on:
       - wcpp-registry
@@ -41,7 +41,7 @@ services:
       - corinthian
   wcpp-gateway:
     build:
-      context: ./Gateway
+      dockerfile: ./Gateway/Dockerfile
     container_name: wcpp-gateway
     depends_on:
       - wcpp-registry
