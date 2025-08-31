@@ -15,7 +15,7 @@ export async function setup_HTTP_routes(app: express.Express, db: DataSource) {
   app.post("/new-player", async (req: Request, res: Response) => {
     const new_player = new Player();
     await db.getRepository(Player).insert(new_player);
-    res.status(201).json({ status: "created", uuid: new_player.id });
+    res.status(201).json({ uuid: new_player.id });
   });
 
   app.get("/player", async (req: Request, res: Response) => {
@@ -24,10 +24,10 @@ export async function setup_HTTP_routes(app: express.Express, db: DataSource) {
         .createQueryBuilder(Player, "player")
         .where("player.id = :id", { id: req.query.id })
         .getOne();
-      res.json({ status: "ok", player });
-    } catch {
-      console.log("ERROR with id supplied.");
-      res.status(400).json({ error: "Invalid id." });
+      if (!player) throw new Error("Invalid id.");
+      res.json({ player });
+    } catch (err) {
+      res.status(400).json({ error: (err as Error).message });
     }
   });
 }

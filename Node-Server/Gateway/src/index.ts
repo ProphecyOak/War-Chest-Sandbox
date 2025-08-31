@@ -25,7 +25,7 @@ const socket_peers: Record<string, WebSocket> = {};
 wss.on("connection", async (ws: WebSocket, req: IncomingMessage) => {
   var supplied_id = req.headers.id;
   if (typeof supplied_id !== "string") {
-    ws.close(1002, "ID invalid or missing.");
+    ws.close(4400, "Bad Request: Missing id.");
     return;
   }
   socket_peers[supplied_id] = ws;

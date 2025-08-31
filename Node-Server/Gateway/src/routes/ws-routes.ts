@@ -9,10 +9,12 @@ export async function setup_WS_routes(
 ) {
   const get_db_url = await WCPP.get_url_factory("wcpp-db");
   const db_url = await get_db_url();
-  console.log(`Sending request: ${`${db_url}/player?id=${client_id}`}`);
   const id_check_result = await fetch(`${db_url}/player?id=${client_id}`);
   if (id_check_result.status == 400) {
-    ws.close(1002, "ID not found in database.");
+    ws.close(
+      4401,
+      "Unauthorized Connection Attempt: ID not found in database."
+    );
   }
 
   ws.on("message", (packet: RawData) => {
