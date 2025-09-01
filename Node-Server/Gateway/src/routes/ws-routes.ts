@@ -1,6 +1,11 @@
 import { RawData, WebSocket } from "ws";
 import { Response, Request } from "express";
 import * as WCPP from "wcpp-utils";
+import {
+  MessageCallback,
+  IWebSocketMessage,
+  setup_WS_bindings,
+} from "./ws-callbacks";
 
 export async function setup_WS_routes(
   ws: WebSocket,
@@ -16,15 +21,41 @@ export async function setup_WS_routes(
       "Unauthorized Connection Attempt: ID not found in database."
     );
   }
+  socket_peers[client_id] = ws;
+  const callbacks: Record<string, MessageCallback[]> = {};
+
+  function bind(event_name: string, callback: MessageCallback) {
+    callbacks[event_name] = callbacks[event_name] || [];
+    callbacks[event_name].push(callback);
+  }
+  function send(
+    message: IWebSocketMessage,
+    recipients: WebSocket[] | WebSocket
+  ) {
+    if (!Array.isArray(recipients)) recipients = [recipients];
+    recipients.forEach((client: WebSocket) => {
+      client.send(JSON.stringify(message));
+    });
+  }
+
+  setup_WS_bindings(bind, send);
 
   ws.on("message", (packet: RawData) => {
-    const data = JSON.parse(packet.toString());
-    console.log(
-      `Received message from ${client_id} containing this data: ${JSON.stringify(
-        data
-      )}`
+    const message = JSON.parse(packet.toString()) as IWebSocketMessage;
+    const relevantCallbacks = callbacks[message.event_name] || [];
+    if (relevantCallbacks.length == 0) {
+      console.log(`Unhandled event of type: '${message.event_name}'`);
+      send(
+        { event_name: "unhandled_event", event_data: { received: message } },
+        [ws]
+      );
+      return;
+    }
+    relevantCallbacks.forEach((callback: MessageCallback) =>
+      callback(message, ws)
     );
   });
+
   ws.on("close", () => {
     console.log("WS client has disconnected.");
     delete socket_peers[client_id];

@@ -28,9 +28,8 @@ wss.on("connection", async (ws: WebSocket, req: IncomingMessage) => {
     ws.close(4400, "Bad Request: Missing id.");
     return;
   }
-  socket_peers[supplied_id] = ws;
-  console.log(`WS client has connected with ${supplied_id}.`);
   await setup_WS_routes(ws, supplied_id as string, socket_peers);
+  console.log(`WS client has connected with ${supplied_id}.`);
 });
 
 process.on("SIGTERM", () => {
