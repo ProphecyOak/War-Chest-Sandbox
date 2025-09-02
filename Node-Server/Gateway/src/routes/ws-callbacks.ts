@@ -16,10 +16,7 @@ export function setup_WS_bindings(
     recipients: WebSocket[] | WebSocket
   ) => void
 ) {
-  bind("create_room", (message, ws) => {
-    send(
-      { event_name: "room_created", event_data: { room_id: "TEST_ID" } },
-      ws
-    );
+  bind("start_game", (message, ws) => {
+    send({ event_name: "game_started", event_data: {} }, ws);
   });
 }

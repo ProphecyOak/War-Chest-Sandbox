@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import { Unit } from "./Unit";
 import { Player } from "./Player";
+import { Game } from "./Game";
 
 export enum COIN_STATE {
   IN_SUPPLY,
@@ -38,4 +39,7 @@ export class Coin {
 
   @Column({ type: "enum", enum: COIN_STATE, default: COIN_STATE.IN_SUPPLY })
   state: COIN_STATE;
+
+  @ManyToOne(() => Game, (game) => game.coins)
+  game: Game;
 }
