@@ -23,7 +23,7 @@ export class Game {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => Room, (room) => room.game)
+  @OneToOne(() => Room, (room) => room.game, { eager: true })
   room: Room;
 
   @OneToMany(() => Coin, (coin) => coin.game)

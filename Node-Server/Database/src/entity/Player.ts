@@ -24,7 +24,10 @@ export class Player {
   @OneToMany(() => Coin, (coin) => coin.player_id)
   coins: Coin[];
 
-  @ManyToOne(() => Room, (room) => room.players, { nullable: true })
+  @ManyToOne(() => Room, (room) => room.players, {
+    nullable: true,
+    eager: true,
+  })
   room: Room;
 
   @Column({ type: "enum", enum: PLAYER_ROLE, default: PLAYER_ROLE.SPECTATOR })

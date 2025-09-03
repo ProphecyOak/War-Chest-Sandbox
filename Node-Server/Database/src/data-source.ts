@@ -4,6 +4,7 @@ import { Player } from "./entity/Player";
 import { Unit } from "./entity/Unit";
 import { Coin } from "./entity/Coin";
 import { Room } from "./entity/Room";
+import { Game } from "./entity/Game";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -14,7 +15,7 @@ export const AppDataSource = new DataSource({
   database: "test",
   synchronize: true,
   logging: false,
-  entities: [Room, Player, Unit, Coin],
+  entities: [Room, Player, Unit, Coin, Game],
   migrations: [],
   subscribers: [],
 });

@@ -12,7 +12,7 @@ export async function setup_HTTP_routes(app: express.Express) {
 
   app.all(/\/db\/.*/, async (req: Request, res: Response) => {
     if (Object.entries(req.query).length == 0) {
-      res.status(400).json({ error: "No query" });
+      res.status(400).json({ error: "No query supplied." });
       return;
     }
     const db_url = await get_db_url();
@@ -30,6 +30,9 @@ export async function setup_HTTP_routes(app: express.Express) {
 
   app.post("/room", async (req: Request, res: Response) => {
     const db_url = await get_db_url();
-    const room_result = await fetch(`${db_url}/room`, { method: "POST" });
+    const result = await fetch(`${db_url}${req.originalUrl}`, {
+      method: "POST",
+    });
+    res.status(result.status).json(await result.json());
   });
 }
